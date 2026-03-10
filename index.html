@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Validação Automática de Notas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validador Fiscal Mundial 2.0</title>
   <style>
     :root{
       --orange:#d86f00;
@@ -16,86 +16,97 @@
       --ok:#16a34a;
       --warn:#f59e0b;
       --err:#dc2626;
-      --shadow: 0 10px 25px rgba(0,0,0,.08);
-      --radius:18px;
-      --radius2:14px;
-      --font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --shadow:0 10px 25px rgba(0,0,0,.08);
     }
+
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:var(--font);
-      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:var(--bg);
+      color:var(--text);
     }
 
-    /* Header */
     .topbar{
       display:flex;
       align-items:center;
-      gap:18px;
+      gap:16px;
       padding:16px 20px;
       background:#fff;
       border-bottom:1px solid var(--line);
     }
-    .logo{
-      width:120px;
-      height:80px;
-      border-radius:16px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#fff;
-      border:1px solid var(--line);
-      overflow:hidden;
-    }
-    .logo svg{width:86px;height:86px}
-    .titlewrap{
-      flex:1;
-      min-width:240px;
-    }
-    .titlewrap h1{
+
+    .topbar h1{
       margin:0;
       font-size:26px;
-      letter-spacing:.2px;
       font-weight:800;
     }
-    .titlewrap .sub{
-      margin-top:4px;
+
+    .sub{
       color:var(--muted);
       font-size:13px;
+      margin-top:2px;
     }
 
-    /* Orange band */
     .band{
-      background:linear-gradient(90deg, var(--orange) 0%, var(--orange2) 100%);
-      padding:18px 0 26px 0;
+      background:linear-gradient(90deg,var(--orange),var(--orange2));
+      padding:20px 0 28px;
     }
 
     .container{
-      max-width:1180px;
+      max-width:1220px;
       margin:0 auto;
-      padding:0 16px 28px;
+      padding:0 16px 30px;
     }
 
-    /* Main white panel */
     .panel{
-      background:var(--card);
+      background:#fff;
       border-radius:22px;
+      padding:18px;
+      margin-top:-24px;
       box-shadow:var(--shadow);
-      padding:18px 18px 16px;
-      border:1px solid rgba(255,255,255,.35);
-      margin-top:-28px;
+      border:1px solid rgba(255,255,255,.4);
     }
 
-    /* Buttons row */
+    .tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .tab-btn{
+      border:2px solid var(--orange2);
+      background:#fff;
+      color:var(--orange);
+      padding:10px 14px;
+      border-radius:14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .tab-btn.active{
+      background:var(--orange);
+      color:#fff;
+      border-color:var(--orange);
+    }
+
+    .tab{
+      display:none;
+    }
+
+    .tab.active{
+      display:block;
+    }
+
     .btnrow{
       display:flex;
       flex-wrap:wrap;
       gap:12px;
       align-items:center;
-      margin:6px 0 14px;
+      margin-bottom:16px;
     }
+
     .btn{
       border:2px solid var(--orange2);
       background:#fff;
@@ -104,33 +115,27 @@
       border-radius:14px;
       font-weight:800;
       cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      user-select:none;
-      box-shadow:0 6px 16px rgba(216,111,0,.08);
-      transition:.15s ease;
       min-height:48px;
     }
-    .btn:hover{transform:translateY(-1px)}
-    .btn:active{transform:translateY(0)}
+
     .btn.primary{
       background:var(--orange);
       color:#fff;
       border-color:var(--orange);
     }
+
     .btn.ghost{
       border-color:#cbd5e1;
       color:#111827;
     }
 
-    /* Grid blocks */
     .grid{
       display:grid;
-      grid-template-columns: 1.2fr 1fr;
+      grid-template-columns:1.2fr 1fr;
       gap:16px;
-      margin-top:10px;
+      margin-top:12px;
     }
+
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
     }
@@ -139,151 +144,58 @@
       background:#fff;
       border:1px solid var(--line);
       border-radius:18px;
-      padding:14px 14px 12px;
+      padding:14px;
       box-shadow:0 8px 20px rgba(0,0,0,.05);
+      margin-bottom:16px;
     }
+
     .card h2{
-      margin:0 0 10px 0;
+      margin:0 0 10px;
       font-size:16px;
-      display:flex;
-      align-items:center;
-      gap:10px;
       font-weight:900;
     }
 
-    .fields{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width: 700px){
-      .fields{grid-template-columns:1fr}
-    }
-    .field label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin:0 0 6px 2px;
-      font-weight:700;
-    }
-    .field input, .field textarea{
-      width:100%;
-      padding:11px 12px;
-      border:1px solid var(--line);
-      border-radius:12px;
-      outline:none;
-      font-size:14px;
-      background:#fbfbfc;
-    }
-    .field textarea{
-      min-height:120px;
-      resize:vertical;
-      background:#fff;
-    }
-    .field input[readonly]{color:#111827}
-    .hint{
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    /* File inputs */
     .filegrid{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:12px;
       margin-top:8px;
     }
+
     @media (max-width: 800px){
       .filegrid{grid-template-columns:1fr}
     }
+
     .filebox{
       border:1px dashed #d1d5db;
       border-radius:14px;
       padding:12px;
       background:#fff;
     }
+
     .filebox .top{
-      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
       margin-bottom:8px;
     }
+
     .badge{
       font-size:11px;
       padding:4px 8px;
       border-radius:999px;
       border:1px solid var(--line);
-      color:#111827;
       background:#f8fafc;
       font-weight:800;
     }
-    .filebox .name{
-      font-size:12px;color:var(--muted);
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      margin-top:6px;
-    }
 
-    /* Rules table */
-    table{
-      width:100%;
-      border-collapse:collapse;
-      border-radius:14px;
+    .name{
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
       overflow:hidden;
-      border:1px solid var(--line);
-    }
-    thead th{
-      text-align:left;
-      font-size:12px;
-      color:#111827;
-      background:#f9fafb;
-      padding:10px 10px;
-      border-bottom:1px solid var(--line);
-      font-weight:900;
-    }
-    tbody td{
-      padding:11px 10px;
-      border-bottom:1px solid var(--line);
-      vertical-align:top;
-      font-size:13px;
-    }
-    tbody tr:last-child td{border-bottom:none}
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:64px;
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:12px;
-      border:1px solid transparent;
-      text-transform:uppercase;
-    }
-    .pill.ok{background:rgba(22,163,74,.08); color:var(--ok); border-color:rgba(22,163,74,.18)}
-    .pill.warn{background:rgba(245,158,11,.10); color:var(--warn); border-color:rgba(245,158,11,.18)}
-    .pill.erro{background:rgba(220,38,38,.08); color:var(--err); border-color:rgba(220,38,38,.18)}
-
-    /* Message box */
-    .resultHeader{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .resultBig{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-weight:1000;
-      padding:10px 14px;
-      border-radius:999px;
-      border:2px solid rgba(220,38,38,.25);
-      background:rgba(220,38,38,.06);
-      color:var(--err);
-    }
-    .resultBig.ok{
-      border-color:rgba(22,163,74,.25);
-      background:rgba(22,163,74,.08);
-      color:var(--ok);
+      text-overflow:ellipsis;
     }
 
     .miniRow{
@@ -295,10 +207,163 @@
       font-size:12px;
       font-weight:700;
     }
-    .miniRow span{background:#f8fafc;border:1px solid var(--line);padding:6px 10px;border-radius:999px}
+
+    .miniRow span{
+      background:#f8fafc;
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+    }
+
+    thead th{
+      text-align:left;
+      font-size:12px;
+      background:#f9fafb;
+      padding:10px;
+      border-bottom:1px solid var(--line);
+    }
+
+    tbody td{
+      padding:11px 10px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      font-size:13px;
+    }
+
+    tbody tr:last-child td{
+      border-bottom:none;
+    }
+
+    .pill{
+      display:inline-flex;
+      min-width:64px;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:12px;
+      border:1px solid transparent;
+      text-transform:uppercase;
+    }
+
+    .pill.ok{
+      background:rgba(22,163,74,.08);
+      color:var(--ok);
+      border-color:rgba(22,163,74,.18);
+    }
+
+    .pill.warn{
+      background:rgba(245,158,11,.1);
+      color:var(--warn);
+      border-color:rgba(245,158,11,.18);
+    }
+
+    .pill.erro{
+      background:rgba(220,38,38,.08);
+      color:var(--err);
+      border-color:rgba(220,38,38,.18);
+    }
+
+    .resultBig{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:1000;
+      padding:10px 14px;
+      border-radius:999px;
+      border:2px solid rgba(220,38,38,.25);
+      background:rgba(220,38,38,.06);
+      color:var(--err);
+      margin-bottom:10px;
+    }
+
+    .resultBig.ok{
+      border-color:rgba(22,163,74,.25);
+      background:rgba(22,163,74,.08);
+      color:var(--ok);
+    }
+
+    .fields{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    @media (max-width: 700px){
+      .fields{grid-template-columns:1fr}
+    }
+
+    .field label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 6px 2px;
+      font-weight:700;
+    }
+
+    .field input,.field textarea,.field select{
+      width:100%;
+      padding:11px 12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      outline:none;
+      font-size:14px;
+      background:#fbfbfc;
+    }
+
+    .field textarea{
+      min-height:130px;
+      resize:vertical;
+      background:#fff;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    @media (max-width: 900px){
+      .stats{grid-template-columns:repeat(2,1fr)}
+    }
+
+    .stat{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .stat .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .stat .v{
+      margin-top:8px;
+      font-size:24px;
+      font-weight:900;
+    }
+
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
 
     .sep{
-      height:1px;background:var(--line);margin:14px 0;
+      height:1px;
+      background:var(--line);
+      margin:14px 0;
     }
 
     .footerNote{
@@ -308,27 +373,11 @@
     }
   </style>
 </head>
-
 <body>
   <div class="topbar">
-    <div class="logo" title="Mundial Logistics Group">
-      <!-- Simple inline logo placeholder (no external file) -->
-      <svg viewBox="0 0 120 120" aria-hidden="true">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1">
-            <stop offset="0" stop-color="#d86f00"/>
-            <stop offset="1" stop-color="#f28c1b"/>
-          </linearGradient>
-        </defs>
-        <circle cx="60" cy="60" r="52" fill="none" stroke="url(#g)" stroke-width="10"/>
-        <text x="60" y="58" font-size="18" text-anchor="middle" font-family="Arial" font-weight="800" fill="#111">mundial</text>
-        <text x="60" y="76" font-size="12" text-anchor="middle" font-family="Arial" font-weight="700" fill="#6b7280">Logistics Group</text>
-      </svg>
-    </div>
-
-    <div class="titlewrap">
-      <h1>Validação Automática de Notas</h1>
-      <div class="sub">Importar XML Remessa + XML Venda • Validar regras fiscais e consistência (quantidade/valor)</div>
+    <div>
+      <h1>Validador Fiscal Mundial 2.0</h1>
+      <div class="sub">Validação fiscal, inteligência de NCM, histórico local e preparação para cobertura / WMS</div>
     </div>
   </div>
 
@@ -336,169 +385,261 @@
     <div class="container">
       <div class="panel">
 
-        <div class="btnrow">
-          <button class="btn" id="btnPickRemessa" type="button">📥 Importar XML Remessa</button>
-          <button class="btn" id="btnPickVenda" type="button">📥 Importar XML Venda</button>
-
-          <button class="btn" id="btnPickDepositantes" type="button">📄 Importar depositantes (CSV/TXT)</button>
-
-          <button class="btn primary" id="btnValidar" type="button">✅ Validar</button>
-          <button class="btn ghost" id="btnExport" type="button">📊 Exportar relatório (CSV)</button>
-          <button class="btn ghost" id="btnLimpar" type="button">🧹 Limpar</button>
-
-          <input type="file" id="fileRemessa" accept=".xml" style="display:none" />
-          <input type="file" id="fileVenda" accept=".xml" style="display:none" />
-          <input type="file" id="fileDepositantes" accept=".csv,.txt" style="display:none" />
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-validacao">Validação Individual</button>
+          <button class="tab-btn" data-tab="tab-lote">Validação em Lote</button>
+          <button class="tab-btn" data-tab="tab-historico">Histórico</button>
+          <button class="tab-btn" data-tab="tab-config">Configurações</button>
         </div>
 
-        <div class="card">
-          <h2>📦 Importar XMLs</h2>
+        <!-- ABA 1 -->
+        <div class="tab active" id="tab-validacao">
 
-          <div class="filegrid">
-            <div class="filebox">
-              <div class="top">
-                <div style="font-weight:1000">XML Remessa</div>
-                <span class="badge" id="badgeRemessa">não carregado</span>
-              </div>
-              <div class="name" id="nameRemessa">—</div>
-            </div>
+          <div class="btnrow">
+            <button class="btn" id="btnPickRemessa" type="button">📥 Importar XML Remessa</button>
+            <button class="btn" id="btnPickVenda" type="button">📥 Importar XML Venda</button>
+            <button class="btn" id="btnPickDepositantes" type="button">📄 Importar depositantes (CSV/TXT)</button>
 
-            <div class="filebox">
-              <div class="top">
-                <div style="font-weight:1000">XML Venda</div>
-                <span class="badge" id="badgeVenda">não carregado</span>
-              </div>
-              <div class="name" id="nameVenda">—</div>
-            </div>
+            <button class="btn primary" id="btnValidar" type="button">✅ Validar</button>
+            <button class="btn ghost" id="btnExport" type="button">📊 Exportar relatório (CSV)</button>
+            <button class="btn ghost" id="btnSalvarHistorico" type="button">💾 Salvar no histórico</button>
+            <button class="btn ghost" id="btnLimpar" type="button">🧹 Limpar</button>
+
+            <input type="file" id="fileRemessa" accept=".xml" style="display:none" />
+            <input type="file" id="fileVenda" accept=".xml" style="display:none" />
+            <input type="file" id="fileDepositantes" accept=".csv,.txt" style="display:none" />
           </div>
 
-          <div class="miniRow">
-            <span id="infoDepositantes">Depositantes carregados: 0</span>
-            <span id="infoChave">Chave Remessa: —</span>
-            <span id="infoNF">NF Remessa: — • NF Venda: —</span>
-          </div>
-        </div>
-
-        <div class="sep"></div>
-
-        <div class="grid">
-          <!-- Left: Rules -->
           <div class="card">
-            <h2>📋 Regras e validações</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:40%">Regra</th>
-                  <th style="width:14%">Status</th>
-                  <th>Detalhe</th>
-                </tr>
-              </thead>
-              <tbody id="rulesBody">
-                <!-- Filled by JS -->
-              </tbody>
-            </table>
+            <h2>📦 Importar XMLs</h2>
 
-            <div class="footerNote">
-              Observação: “Endereço” aqui é referência fixa da base Mundial. A validação prática é por <b>CEP + Bairro</b>.
+            <div class="filegrid">
+              <div class="filebox">
+                <div class="top">
+                  <div style="font-weight:1000">XML Remessa</div>
+                  <span class="badge" id="badgeRemessa">não carregado</span>
+                </div>
+                <div class="name" id="nameRemessa">—</div>
+              </div>
+
+              <div class="filebox">
+                <div class="top">
+                  <div style="font-weight:1000">XML Venda</div>
+                  <span class="badge" id="badgeVenda">não carregado</span>
+                </div>
+                <div class="name" id="nameVenda">—</div>
+              </div>
+            </div>
+
+            <div class="miniRow">
+              <span id="infoDepositantes">Depositantes carregados: 0</span>
+              <span id="infoChave">Chave Remessa: —</span>
+              <span id="infoNF">NF Remessa: — • NF Venda: —</span>
             </div>
           </div>
 
-          <!-- Right: Message -->
-          <div class="card">
-            <h2>🧾 Mensagem ao fornecedor</h2>
+          <div class="grid">
+            <div class="card">
+              <h2>📋 Regras e validações</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:40%">Regra</th>
+                    <th style="width:14%">Status</th>
+                    <th>Detalhe</th>
+                  </tr>
+                </thead>
+                <tbody id="rulesBody"></tbody>
+              </table>
 
-            <div class="resultHeader">
+              <div class="footerNote">
+                Observação: a validação do endereço da Mundial é prática por <b>CEP + Bairro</b>. O endereço textual é referência.
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>🧾 Mensagem ao fornecedor</h2>
+
               <div id="resultadoBig" class="resultBig">❌ REPROVADO</div>
+
+              <div class="field">
+                <label>Mensagem pronta</label>
+                <textarea id="msgFornecedor"></textarea>
+              </div>
+
+              <div class="field">
+                <label>Itens da nota (Produto | Descrição | NCM)</label>
+                <textarea id="listaProdutosNCM" readonly></textarea>
+              </div>
+
+              <div class="sep"></div>
+
+              <div class="fields">
+                <div class="field">
+                  <label>CNPJ Mundial</label>
+                  <input id="cnpjMundial" readonly />
+                </div>
+
+                <div class="field">
+                  <label>Endereço Base</label>
+                  <input id="enderecoBase" readonly />
+                </div>
+
+                <div class="field">
+                  <label>CEP aceito</label>
+                  <input id="cepAceito" readonly />
+                </div>
+
+                <div class="field">
+                  <label>Bairros aceitos</label>
+                  <input id="bairrosAceitos" readonly />
+                </div>
+
+                <div class="field">
+                  <label>Status geral</label>
+                  <input id="statusGeral" readonly value="Aguardando validação" />
+                </div>
+
+                <div class="field">
+                  <label>Depositante (Venda)</label>
+                  <input id="depositanteVenda" readonly value="—" />
+                </div>
+
+                <div class="field" style="grid-column:1/-1">
+                  <label>Natureza Remessa / Venda</label>
+                  <input id="natOps" readonly value="—" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 2 -->
+        <div class="tab" id="tab-lote">
+          <div class="card">
+            <h2>📦 Validação em lote</h2>
+
+            <div class="btnrow">
+              <button class="btn" id="btnPickLote" type="button">📂 Importar múltiplos XMLs</button>
+              <button class="btn primary" id="btnValidarLote" type="button">✅ Validar lote</button>
+              <button class="btn ghost" id="btnExportLote" type="button">📊 Exportar lote (CSV)</button>
+
+              <input type="file" id="fileLote" accept=".xml" multiple style="display:none" />
             </div>
 
-            <div class="field">
-              <label>Mensagem pronta (copiar e enviar)</label>
-              <textarea id="msgFornecedor" placeholder="A mensagem aparecerá aqui após validar..."></textarea>
-              <div class="hint">Dica: a mensagem já sai com os itens que precisam de ajuste.</div>
+            <div class="miniRow">
+              <span id="infoLoteArquivos">Arquivos carregados: 0</span>
+              <span id="infoLoteRemessas">Remessas identificadas: 0</span>
+              <span id="infoLoteVendas">Vendas identificadas: 0</span>
+              <span id="infoLotePares">Pares encontrados: 0</span>
             </div>
 
             <div class="sep"></div>
 
+            <table>
+              <thead>
+                <tr>
+                  <th>NF Remessa</th>
+                  <th>NF Venda</th>
+                  <th>Status</th>
+                  <th>Fornecedor</th>
+                  <th>Resumo</th>
+                </tr>
+              </thead>
+              <tbody id="loteBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ABA 3 -->
+        <div class="tab" id="tab-historico">
+          <div class="stats">
+            <div class="stat"><div class="k">Registros</div><div class="v" id="statRegistros">0</div></div>
+            <div class="stat"><div class="k">Aprovados</div><div class="v" id="statAprovados">0</div></div>
+            <div class="stat"><div class="k">Reprovados</div><div class="v" id="statReprovados">0</div></div>
+            <div class="stat"><div class="k">Com alerta</div><div class="v" id="statAlertas">0</div></div>
+          </div>
+
+          <div class="card">
+            <h2>🕘 Histórico local</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Remessa</th>
+                  <th>Venda</th>
+                  <th>Status</th>
+                  <th>Fornecedor</th>
+                  <th>Cliente</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ABA 4 -->
+        <div class="tab" id="tab-config">
+          <div class="card">
+            <h2>⚙️ Configurações do motor NCM</h2>
+
             <div class="fields">
-              <div class="field">
-                <label>CNPJ Mundial (esperado na Remessa)</label>
-                <input id="cnpjMundial" readonly />
-              </div>
-
-              <div class="field">
-                <label>Endereço (referência — Base Mundial)</label>
-                <input id="enderecoBase" readonly />
-              </div>
-
-              <div class="field">
-                <label>CEP aceito (Remessa)</label>
-                <input id="cepAceito" readonly />
-              </div>
-
-              <div class="field">
-                <label>Bairros aceitos (Remessa)</label>
-                <input id="bairrosAceitos" readonly />
-              </div>
-
-              <div class="field">
-                <label>Status geral</label>
-                <input id="statusGeral" readonly value="Aguardando validação" />
-              </div>
-
-              <div class="field">
-                <label>Depositante (Venda) — dest/CNPJ</label>
-                <input id="depositanteVenda" readonly value="—" />
+              <div class="field" style="grid-column:1/-1">
+                <label>Prefixos de NCM aceitos para logística promocional</label>
+                <textarea id="cfgAllowedPrefixes" readonly></textarea>
               </div>
 
               <div class="field" style="grid-column:1/-1">
-                <label>Natureza Remessa / Natureza Venda (lidas do XML)</label>
-                <input id="natOps" readonly value="—" />
+                <label>Regras de palavras-chave x NCM</label>
+                <textarea id="cfgKeywordRules" readonly></textarea>
               </div>
             </div>
           </div>
         </div>
 
-      </div><!-- panel -->
-    </div><!-- container -->
-  </div><!-- band -->
+      </div>
+    </div>
+  </div>
 
 <script>
-/* ==========================================================
-   CONFIG (REGRAS E CONSTANTES)
-   - Mantém seu layout intacto; apenas adiciona validações.
-========================================================== */
+/* =========================
+   CONFIG
+========================= */
 const CFG = {
-  // Base Mundial
   CNPJ_MUNDIAL: "05.075.152/0001-77",
   ENDERECO_BASE: "ESTRADA VELHA GUARULHOS SÃO MIGUEL, 1971",
   CEP_ACEITO: "07210-250",
   BAIRROS_ACEITOS: ["JARDIM ARAPONGAS", "JARDIM CUMBICA"],
 
-  // Fiscal: CFOP por UF (SP vs fora)
   CFOP_SP: ["5949","5923"],
   CFOP_FORA_SP: ["6949","6923"],
 
-  // CST/CSOSN permitidos (remessa)
   CST_CSOSN_PERMITIDOS: ["040","041","090"],
 
-  // Natureza: padronização por prefixo
   REMESSA_PREFIXOS_OK: ["REM", "OUTRAS", "SIMPLES"],
   VENDA_PREFIXOS_OK: ["VENDA", "REVENDA"],
 
-  // Tolerância valor total (vProd)
   TOLERANCIA_VALOR: 0.02,
-
-  // Alíquota por NCM (Venda)
   ALIQ_PADRAO: 18,
-  ALIQ_9403: 12,
+  ALIQ_9403: 12
+};
 
-  // Integração (portal/WMS) - sem mudar layout:
-  // o portal pode chamar window.getValidacaoPayload()
-  // e/ou escutar postMessage quando aprovado.
-  INTEGRATION: {
-    POSTMESSAGE_TARGET_ORIGIN: "*", // ajuste no portal: "https://seuportal..."
-    POSTMESSAGE_EVENT: "VALIDACAO_FISCAL_RESULT"
-  }
+/* =========================
+   MOTOR NCM INTELIGENTE
+========================= */
+const NCM_ENGINE = {
+  allowedPrefixes: [
+    "9403", "4911", "4823", "4819", "3926", "3924",
+    "7326", "7616", "4415", "4420"
+  ],
+  keywordRules: [
+    { keywords:["DISPLAY","EXPOSITOR","BALCAO","MOSTRUARIO"], expected:["9403"] },
+    { keywords:["CARTAZ","FOLDER","LAMINA","IMPRESSO","PANFLETO"], expected:["4911","4823"] },
+    { keywords:["CAIXA","EMBALAGEM","PAPELAO"], expected:["4819","4823"] },
+    { keywords:["COPO","BRINDE","PVC","ACRILICO","PLASTICO"], expected:["3926","3924"] },
+    { keywords:["SUPORTE","ESTRUTURA","METAL","FERRO","ACO"], expected:["7326","7616"] },
+    { keywords:["PALLET","PALETE","MADEIRA"], expected:["4415","4420"] }
+  ]
 };
 
 /* =========================
@@ -509,13 +650,18 @@ let state = {
   vendaDoc: null,
   remessa: null,
   venda: null,
-  depositantesSet: new Set(), // CNPJs (digits only)
+  depositantesSet: new Set(),
   lastRules: [],
-  lastPayload: null
+  history: loadHistory(),
+
+  loteDocs: [],
+  loteRemessas: [],
+  loteVendas: [],
+  loteResultados: []
 };
 
 /* =========================
-   Helpers
+   HELPERS
 ========================= */
 function onlyDigits(s){ return (s||"").toString().replace(/\D+/g,""); }
 
@@ -561,7 +707,6 @@ function fmtMoneyBR(n){
 }
 
 function rule(status, name, detail){
-  // status: OK | WARN | ERRO
   return { status, name, detail };
 }
 
@@ -585,15 +730,22 @@ function formatCnpjOrDash(doc){
   if(d.length === 14){
     return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,"$1.$2.$3/$4-$5");
   }
-  if(d.length === 11){
-    return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/,"$1.$2.$3-$4");
-  }
-  return "—";
+  return d || "—";
+}
+
+function getNcmPrefix(ncm){
+  return String(ncm || "").replace(/\D/g, "").substring(0,4);
+}
+
+function detectarRegraDescricao(desc){
+  const d = normalizeText(desc);
+  return NCM_ENGINE.keywordRules.find(r =>
+    r.keywords.some(k => d.includes(k))
+  );
 }
 
 /* =========================
-   Extract data from NFe XML
-   (nfeProc ou NFe)
+   EXTRACT XML
 ========================= */
 function extractNFe(doc){
   const nfe = doc.querySelector("NFe") || doc;
@@ -604,17 +756,17 @@ function extractNFe(doc){
 
   const emitCnpj = getFirstText(nfe, ["emit > CNPJ","emit > CPF"]);
   const emitUF = getFirstText(nfe, ["emit > enderEmit > UF"]);
+  const emitNome = getFirstText(nfe, ["emit > xNome"]);
 
   const destCnpj = getFirstText(nfe, ["dest > CNPJ"]);
   const destCpf = getFirstText(nfe, ["dest > CPF"]);
   const destDoc = destCnpj || destCpf;
+  const destNome = getFirstText(nfe, ["dest > xNome"]);
 
   const enderDest = nfe.querySelector("dest > enderDest");
   const cep = enderDest ? getFirstText(enderDest, ["CEP"]) : "";
   const bairro = enderDest ? getFirstText(enderDest, ["xBairro"]) : "";
-  const ufDest = enderDest ? getFirstText(enderDest, ["UF"]) : "";
 
-  // Itens
   const dets = Array.from(nfe.querySelectorAll("det"));
   const itens = dets.map(det => {
     const prod = det.querySelector("prod");
@@ -627,16 +779,16 @@ function extractNFe(doc){
     const qCom = prod ? getFirstText(prod, ["qCom"]) : "";
     const vProd = prod ? getFirstText(prod, ["vProd"]) : "";
 
-    // ICMS: CST/CSOSN e pICMS
     let cst = "";
     let csosn = "";
     let pIcms = "";
+
     if(imposto){
       const icms = imposto.querySelector("ICMS");
       if(icms){
         const cstEl = icms.querySelector("CST");
         const csosnEl = icms.querySelector("CSOSN");
-        const pIcmsEl = icms.querySelector("pICMS"); // pode estar dentro do nó específico
+        const pIcmsEl = icms.querySelector("pICMS");
         cst = cstEl ? cstEl.textContent.trim() : "";
         csosn = csosnEl ? csosnEl.textContent.trim() : "";
         pIcms = pIcmsEl ? pIcmsEl.textContent.trim() : "";
@@ -655,258 +807,233 @@ function extractNFe(doc){
     };
   });
 
-  // Totais
   const vProdTotXml = getFirstText(nfe, ["total > ICMSTot > vProd", "ICMSTot > vProd"]);
   const vProdTotal = vProdTotXml ? safeNum(vProdTotXml) : itens.reduce((a,b)=>a+b.vProd,0);
   const qTotal = itens.reduce((a,b)=>a+b.qCom,0);
 
-  // Textos adicionais
   const infAdFisco = getFirstText(nfe, ["infAdic > infAdFisco"]);
   const infCpl = getFirstText(nfe, ["infAdic > infCpl"]);
   const textoAdic = (infAdFisco + " " + infCpl).trim();
 
   return {
     chave, nNF, natOp,
-    emitCnpj, emitUF,
-    destDoc, destCnpj,
-    cep, bairro, ufDest,
+    emitCnpj, emitUF, emitNome,
+    destDoc, destNome,
+    cep, bairro,
     itens, vProdTotal, qTotal,
     textoAdic
   };
 }
 
 /* =========================
-   Depositantes import
+   HISTÓRICO
 ========================= */
-function parseDepositantesText(text){
-  const digits = text.match(/\d{14}/g) || [];
-  const set = new Set();
-  for(const d of digits) set.add(d);
-  return set;
+function loadHistory(){
+  try{
+    return JSON.parse(localStorage.getItem("validadorFiscalHistory") || "[]");
+  }catch(e){
+    return [];
+  }
+}
+
+function saveHistory(){
+  localStorage.setItem("validadorFiscalHistory", JSON.stringify(state.history));
+}
+
+function refreshHistoryUI(){
+  const body = document.getElementById("historyBody");
+  body.innerHTML = "";
+
+  let aprovados = 0, reprovados = 0, alertas = 0;
+
+  state.history.forEach(item => {
+    if(item.status === "APROVADO") aprovados++;
+    if(item.status === "REPROVADO") reprovados++;
+    if(item.hasWarn) alertas++;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(item.date)}</td>
+      <td>${escapeHtml(item.nfRemessa || "—")}</td>
+      <td>${escapeHtml(item.nfVenda || "—")}</td>
+      <td><span class="pill ${item.status === "APROVADO" ? "ok" : "erro"}">${escapeHtml(item.status)}</span></td>
+      <td>${escapeHtml(item.fornecedor || "—")}</td>
+      <td>${escapeHtml(item.cliente || "—")}</td>
+    `;
+    body.appendChild(tr);
+  });
+
+  document.getElementById("statRegistros").textContent = state.history.length;
+  document.getElementById("statAprovados").textContent = aprovados;
+  document.getElementById("statReprovados").textContent = reprovados;
+  document.getElementById("statAlertas").textContent = alertas;
 }
 
 /* =========================
-   Validation rules
+   NCM ENGINE
+========================= */
+function validarNcmInteligente(remessa, venda){
+  const findings = [];
+
+  if(!venda) return findings;
+
+  const remMap = new Map();
+  (remessa.itens || []).forEach(it => {
+    const key = (it.cProd || "").trim() || normalizeText(it.xProd);
+    if(key) remMap.set(key, it);
+  });
+
+  (venda.itens || []).forEach(vIt => {
+    const key = (vIt.cProd || "").trim() || normalizeText(vIt.xProd);
+    const rIt = remMap.get(key);
+
+    if(rIt){
+      if((rIt.NCM || "") && (vIt.NCM || "") && rIt.NCM !== vIt.NCM){
+        findings.push(rule("ERRO","NCM Remessa × Venda", `${vIt.cProd || vIt.xProd}: Rem ${rIt.NCM} ≠ Ven ${vIt.NCM}`));
+      } else {
+        findings.push(rule("OK","NCM Remessa × Venda", `${vIt.cProd || vIt.xProd}: ${vIt.NCM || "—"}`));
+      }
+    }
+
+    const prefix = getNcmPrefix(vIt.NCM);
+    if(prefix){
+      if(NCM_ENGINE.allowedPrefixes.includes(prefix)){
+        findings.push(rule("OK","Faixa de NCM permitida", `${vIt.cProd || vIt.xProd}: prefixo ${prefix} permitido`));
+      } else {
+        findings.push(rule("WARN","Faixa de NCM permitida", `${vIt.cProd || vIt.xProd}: prefixo ${prefix} fora da base padrão`));
+      }
+    }
+
+    const regraDesc = detectarRegraDescricao(vIt.xProd);
+    if(regraDesc){
+      if(regraDesc.expected.includes(prefix)){
+        findings.push(rule("OK","Descrição × NCM", `${vIt.cProd || vIt.xProd}: descrição compatível com ${prefix}`));
+      } else {
+        findings.push(rule("WARN","Descrição × NCM", `${vIt.cProd || vIt.xProd}: descrição sugere ${regraDesc.expected.join("/")} e veio ${prefix || "—"}`));
+      }
+    }
+
+    const esperada = prefix === "9403" ? CFG.ALIQ_9403 : CFG.ALIQ_PADRAO;
+    if(Number(vIt.pICMS || 0) > 0){
+      if(Math.abs(Number(vIt.pICMS) - esperada) < 0.01){
+        findings.push(rule("OK","Alíquota × NCM", `${vIt.cProd || vIt.xProd}: ${vIt.pICMS}% compatível com ${prefix || "NCM?"}`));
+      } else {
+        findings.push(rule("ERRO","Alíquota × NCM", `${vIt.cProd || vIt.xProd}: veio ${vIt.pICMS}% e o esperado é ${esperada}%`));
+      }
+    } else {
+      findings.push(rule("WARN","Alíquota × NCM", `${vIt.cProd || vIt.xProd}: sem pICMS no XML`));
+    }
+  });
+
+  return findings;
+}
+
+/* =========================
+   VALIDAR TUDO
 ========================= */
 function validarTudo(){
   const rules = [];
 
-  // caso "nota de serviço" / sem XML de venda
   if(!state.remessa){
-    rules.push(rule("ERRO","Importação XMLs","Importe ao menos o XML Remessa."));
+    rules.push(rule("ERRO","Importação XMLs","Importe XML Remessa."));
     return rules;
   }
+
   if(!state.venda){
-    rules.push(rule("WARN","Nota de serviço / sem XML Venda","Venda não importada (sem XML). Validar manualmente regras da venda."));
+    rules.push(rule("WARN","Nota de venda não importada","Sem XML Venda — algumas validações ficarão pendentes."));
   }
 
-  // Labels
   document.getElementById("infoChave").textContent = "Chave Remessa: " + (state.remessa.chave || "—");
-  document.getElementById("infoNF").textContent =
-    "NF Remessa: " + (state.remessa.nNF||"—") + " • NF Venda: " + (state.venda?.nNF||"—");
+  document.getElementById("infoNF").textContent = "NF Remessa: " + (state.remessa.nNF || "—") + " • NF Venda: " + (state.venda?.nNF || "—");
   document.getElementById("depositanteVenda").value = state.venda ? formatCnpjOrDash(state.venda.destDoc) : "—";
 
-  // 0) Endereço referência (informativo)
-  rules.push(rule("OK","Endereço (referência — Base Mundial)", CFG.ENDERECO_BASE));
-
-  // 1) CNPJ Mundial x Remessa dest/CNPJ
-  const remessaDestDigits = onlyDigits(state.remessa.destDoc);
-  const mundialDigits = onlyDigits(CFG.CNPJ_MUNDIAL);
-  if(remessaDestDigits && remessaDestDigits === mundialDigits){
-    rules.push(rule("OK","CNPJ Destinatário (Remessa)","OK — Remessa para Mundial."));
+  const remDest = onlyDigits(state.remessa.destDoc);
+  const cnpjM = onlyDigits(CFG.CNPJ_MUNDIAL);
+  if(remDest === cnpjM){
+    rules.push(rule("OK","CNPJ Destinatário","Remessa para Mundial."));
   }else{
-    rules.push(rule("ERRO","CNPJ Destinatário (Remessa)",
-      `Encontrado: ${formatCnpjOrDash(state.remessa.destDoc)} • Esperado: ${CFG.CNPJ_MUNDIAL}`
-    ));
+    rules.push(rule("ERRO","CNPJ Destinatário",`Encontrado ${formatCnpjOrDash(remDest)} | Esperado ${CFG.CNPJ_MUNDIAL}`));
   }
 
-  // 2) CEP + Bairro Remessa (endereDest)
-  const cepDigits = onlyDigits(state.remessa.cep);
-  const cepAceitoDigits = onlyDigits(CFG.CEP_ACEITO);
-  const bairroNorm = normalizeText(state.remessa.bairro);
-  const bairroOk = CFG.BAIRROS_ACEITOS.some(b => bairroNorm === normalizeText(b) || bairroNorm.includes(normalizeText(b)));
-  const cepOk = cepDigits && (cepDigits === cepAceitoDigits);
-
-  if(cepOk && bairroOk){
-    rules.push(rule("OK","Endereço Mundial (CEP + Bairro)","OK — CEP e Bairro compatíveis."));
+  const cep = onlyDigits(state.remessa.cep);
+  const bairro = normalizeText(state.remessa.bairro);
+  const bairroOk = CFG.BAIRROS_ACEITOS.some(b => bairro === normalizeText(b) || bairro.includes(normalizeText(b)));
+  if(cep === onlyDigits(CFG.CEP_ACEITO) && bairroOk){
+    rules.push(rule("OK","Endereço Mundial","CEP + Bairro corretos."));
   }else{
-    rules.push(rule("ERRO","Endereço Mundial (CEP + Bairro)",
-      `Encontrado: CEP ${cepDigits || "—"} • Bairro ${bairroNorm || "—"} | Esperado: CEP ${cepAceitoDigits} • ${CFG.BAIRROS_ACEITOS.join(" / ")}`
-    ));
+    rules.push(rule("ERRO","Endereço Mundial",`CEP ${cep || "—"} | Bairro ${bairro || "—"}`));
   }
 
-  // 3) Natureza Remessa (padronização por prefixo)
-  const natRem = state.remessa.natOp || "";
-  if(startsWithAny(natRem, CFG.REMESSA_PREFIXOS_OK)){
-    rules.push(rule("OK","Natureza da Operação (Remessa)", `OK — ${normalizeText(natRem)}`));
+  if(startsWithAny(state.remessa.natOp, CFG.REMESSA_PREFIXOS_OK)){
+    rules.push(rule("OK","Natureza Remessa", normalizeText(state.remessa.natOp)));
   }else{
-    rules.push(rule("ERRO","Natureza da Operação (Remessa)",
-      `Encontrado: "${normalizeText(natRem)}" • Deve iniciar com ${CFG.REMESSA_PREFIXOS_OK.join(" / ")}`
-    ));
+    rules.push(rule("ERRO","Natureza Remessa", normalizeText(state.remessa.natOp) || "Não encontrada"));
   }
 
-  // 4) CST/CSOSN Remessa (040/041/090)
+  const ufEmit = (state.remessa.emitUF || "").trim().toUpperCase();
+  const permitidos = ufEmit === "SP" ? CFG.CFOP_SP : CFG.CFOP_FORA_SP;
+  const cfops = (state.remessa.itens || []).map(it => it.CFOP).filter(Boolean);
+  if(cfops.length && cfops.every(c => permitidos.includes(c))){
+    rules.push(rule("OK","CFOP por UF", `${ufEmit || "—"}: ${permitidos.join(" / ")}`));
+  }else{
+    rules.push(rule("ERRO","CFOP por UF", `CFOP fora do permitido para UF ${ufEmit || "—"}`));
+  }
+
   const itensRem = state.remessa.itens || [];
-  const cstBad = [];
-  for(const it of itensRem){
-    const raw = (it.CSOSN || it.CST || "").trim();
-    let norm = onlyDigits(raw);
-    if(norm.length === 2) norm = "0" + norm;
-    if(norm.length === 1) norm = "00" + norm;
-    if(norm.length > 3) norm = norm.slice(-3);
-    if(!CFG.CST_CSOSN_PERMITIDOS.includes(norm)){
-      cstBad.push({cProd:it.cProd, norm: norm || raw || "—"});
+  const cstInvalidos = [];
+  itensRem.forEach(it => {
+    let raw = onlyDigits(it.CSOSN || it.CST || "");
+    if(raw.length === 2) raw = "0" + raw;
+    if(raw.length === 1) raw = "00" + raw;
+    if(raw && !CFG.CST_CSOSN_PERMITIDOS.includes(raw)){
+      cstInvalidos.push(`${it.cProd || it.xProd}:${raw}`);
     }
-  }
-  if(cstBad.length === 0){
-    rules.push(rule("OK","CST/CSOSN (Remessa)","OK — 040/041/090."));
+  });
+  if(cstInvalidos.length === 0){
+    rules.push(rule("OK","CST/CSOSN","040 / 041 / 090"));
   }else{
-    const sample = cstBad.slice(0,8).map(x => `${x.cProd||"—"}:${x.norm}`).join(" • ");
-    rules.push(rule("ERRO","CST/CSOSN (Remessa)",`Itens fora do padrão: ${cstBad.length}. Ex.: ${sample}`));
+    rules.push(rule("ERRO","CST/CSOSN", cstInvalidos.join(" • ")));
   }
 
-  // 5) CFOP Remessa conforme UF (SP ou fora)
-  const ufEmitRem = (state.remessa.emitUF || "").trim().toUpperCase();
-  const permitidosCfop = ufEmitRem === "SP" ? CFG.CFOP_SP : CFG.CFOP_FORA_SP;
-  const cfopBad = [];
-  for(const it of itensRem){
-    const cf = onlyDigits(it.CFOP).slice(-4);
-    if(cf && !permitidosCfop.includes(cf)){
-      cfopBad.push({cProd: it.cProd, cfop: cf || "—"});
-    }
-  }
-  if(cfopBad.length === 0){
-    rules.push(rule("OK","CFOP por UF (Remessa)",`OK — ${ufEmitRem || "UF?"}: ${permitidosCfop.join(" / ")}`));
-  }else{
-    const sample = cfopBad.slice(0,8).map(x => `${x.cProd||"—"}:${x.cfop}`).join(" • ");
-    rules.push(rule("ERRO","CFOP por UF (Remessa)",`CFOP inválido para UF ${ufEmitRem||"—"}. Ex.: ${sample}`));
-  }
-
-  // 6) Emitente Remessa = Venda (CNPJ emitente)
   if(state.venda){
+    if(startsWithAny(state.venda.natOp, CFG.VENDA_PREFIXOS_OK)){
+      rules.push(rule("OK","Natureza Venda", normalizeText(state.venda.natOp)));
+    }else{
+      rules.push(rule("ERRO","Natureza Venda", normalizeText(state.venda.natOp) || "Não encontrada"));
+    }
+
     const emitR = onlyDigits(state.remessa.emitCnpj);
     const emitV = onlyDigits(state.venda.emitCnpj);
     if(emitR && emitV && emitR === emitV){
-      rules.push(rule("OK","CNPJ do emitente (Remessa = Venda)","OK — mesmo CNPJ emitente."));
+      rules.push(rule("OK","Emitente Remessa = Venda","Mesmo CNPJ."));
     }else{
-      rules.push(rule("ERRO","CNPJ do emitente (Remessa = Venda)",
-        `Remessa: ${formatCnpjOrDash(state.remessa.emitCnpj)} • Venda: ${formatCnpjOrDash(state.venda.emitCnpj)}`
-      ));
+      rules.push(rule("ERRO","Emitente Remessa = Venda", `${formatCnpjOrDash(emitR)} x ${formatCnpjOrDash(emitV)}`));
     }
+
+    if(Math.abs((state.remessa.qTotal || 0) - (state.venda.qTotal || 0)) < 1e-9){
+      rules.push(rule("OK","Quantidade","Totais iguais."));
+    }else{
+      rules.push(rule("ERRO","Quantidade", `${state.remessa.qTotal || 0} x ${state.venda.qTotal || 0}`));
+    }
+
+    if(Math.abs((state.remessa.vProdTotal || 0) - (state.venda.vProdTotal || 0)) <= CFG.TOLERANCIA_VALOR){
+      rules.push(rule("OK","Valor","Totais iguais."));
+    }else{
+      rules.push(rule("ERRO","Valor", `${fmtMoneyBR(state.remessa.vProdTotal)} x ${fmtMoneyBR(state.venda.vProdTotal)}`));
+    }
+
+    const destVenda = onlyDigits(state.venda.destDoc);
+    if(state.depositantesSet.size === 0){
+      rules.push(rule("WARN","Depositante","Lista não carregada."));
+    }else if(state.depositantesSet.has(destVenda)){
+      rules.push(rule("OK","Depositante","Encontrado."));
+    }else{
+      rules.push(rule("ERRO","Depositante","Não encontrado na base."));
+    }
+
+    rules.push(...validarNcmInteligente(state.remessa, state.venda));
   }
 
-  // 7) Natureza Venda (padronização)
-  const natVenda = state.venda?.natOp || "";
-  if(state.venda){
-    if(startsWithAny(natVenda, CFG.VENDA_PREFIXOS_OK)){
-      rules.push(rule("OK","Natureza da Operação (Venda)", `OK — ${normalizeText(natVenda)}`));
-    }else{
-      rules.push(rule("ERRO","Natureza da Operação (Venda)",
-        `Encontrado: "${normalizeText(natVenda)}" • Deve iniciar com ${CFG.VENDA_PREFIXOS_OK.join(" / ")}`
-      ));
-    }
-  }
-
-  // 8) Depositante (Venda dest/CNPJ × Lista)
-  if(state.venda){
-    const vendaDestDigits = onlyDigits(state.venda.destDoc);
-    const depCount = state.depositantesSet.size;
-    if(depCount === 0){
-      rules.push(rule("WARN","Depositante (Venda dest/CNPJ × Lista)","Lista de depositantes não carregada — importe CSV/TXT."));
-    }else{
-      if(vendaDestDigits && state.depositantesSet.has(vendaDestDigits)){
-        rules.push(rule("OK","Depositante (Venda dest/CNPJ × Lista)","OK — CNPJ encontrado na lista."));
-      }else{
-        rules.push(rule("ERRO","Depositante (Venda dest/CNPJ × Lista)",
-          `CNPJ ${formatCnpjOrDash(state.venda.destDoc)} não encontrado (carregados: ${depCount}).`
-        ));
-      }
-    }
-  }
-
-  // 9) Quantidade Remessa x Venda (total)
-  if(state.venda){
-    const qR = Number(state.remessa.qTotal||0);
-    const qV = Number(state.venda.qTotal||0);
-    if(Math.abs(qR - qV) < 1e-9){
-      rules.push(rule("OK","Quantidade Remessa × Venda","Compatível (totais iguais)."));
-    }else{
-      rules.push(rule("ERRO","Quantidade Remessa × Venda",`Divergente — Remessa: ${qR} • Venda: ${qV}`));
-    }
-  }
-
-  // 10) Valor Remessa x Venda (vProd total)
-  if(state.venda){
-    const vR = Number(state.remessa.vProdTotal||0);
-    const vV = Number(state.venda.vProdTotal||0);
-    if(Math.abs(vR - vV) <= CFG.TOLERANCIA_VALOR){
-      rules.push(rule("OK","Valor Remessa × Venda",`Compatível — Remessa: ${fmtMoneyBR(vR)} • Venda: ${fmtMoneyBR(vV)}`));
-    }else{
-      rules.push(rule("ERRO","Valor Remessa × Venda",`Divergente — Remessa: ${fmtMoneyBR(vR)} • Venda: ${fmtMoneyBR(vV)}`));
-    }
-  }
-
-  // 11) NCM Remessa = Venda (por código cProd quando possível)
-  if(state.venda){
-    const mapRem = new Map();
-    for(const it of (state.remessa.itens||[])){
-      const key = (it.cProd||"").trim() || normalizeText(it.xProd);
-      if(!key) continue;
-      if(!mapRem.has(key)) mapRem.set(key, it.NCM || "");
-    }
-
-    const diverg = [];
-    for(const it of (state.venda.itens||[])){
-      const key = (it.cProd||"").trim() || normalizeText(it.xProd);
-      const ncmR = mapRem.get(key);
-      const ncmV = it.NCM || "";
-      if(ncmR && ncmV && ncmR !== ncmV){
-        diverg.push(`${it.cProd||"—"}: Rem ${ncmR} ≠ Ven ${ncmV}`);
-      }
-    }
-    if(diverg.length === 0){
-      rules.push(rule("OK","NCM Remessa × Venda","Compatível (por itens/código)."));
-    }else{
-      rules.push(rule("ERRO","NCM Remessa × Venda",`Divergências: ${diverg.slice(0,8).join(" • ")}${diverg.length>8?" …":""}`));
-    }
-  }
-
-  // 12) Alíquota por NCM (Venda) — 18% padrão | 12% para NCM 9403*
-  if(state.venda){
-    const erros = [];
-    const semAliq = [];
-    for(const it of (state.venda.itens||[])){
-      const ncm = (it.NCM||"").toString();
-      const aliq = Number(it.pICMS||0);
-      const esperada = ncm.startsWith("9403") ? CFG.ALIQ_9403 : CFG.ALIQ_PADRAO;
-
-      if(!Number.isFinite(aliq) || aliq === 0){
-        // pode ser isento/sem tag pICMS dependendo do regime; tratamos como WARN para não reprovar sem certeza
-        semAliq.push(it.cProd||"—");
-        continue;
-      }
-      if(Math.abs(aliq - esperada) > 0.01){
-        erros.push(`${it.cProd||"—"}: ${aliq}% (esp. ${esperada}%)`);
-      }
-    }
-
-    if(erros.length === 0 && semAliq.length === 0){
-      rules.push(rule("OK","Alíquota por NCM (Venda)","OK — 18% padrão | 12% para 9403."));
-    }else if(erros.length === 0 && semAliq.length > 0){
-      rules.push(rule("WARN","Alíquota por NCM (Venda)",`Sem pICMS em alguns itens (validar manualmente): ${semAliq.slice(0,8).join(" • ")}${semAliq.length>8?" …":""}`));
-    }else{
-      rules.push(rule("ERRO","Alíquota por NCM (Venda)",`Alíquota incorreta em itens: ${erros.slice(0,8).join(" • ")}${erros.length>8?" …":""}`));
-    }
-  }
-
-  // 13) Padronização abreviações (endereço e natureza) — validação “soft”
-  // A ideia aqui é “normalizar” e alertar se ficar vazio/estranho
-  const endOk = cepDigits && bairroNorm;
-  rules.push(rule(endOk ? "OK":"WARN","Padronização (Endereço / Natureza)",
-    "Normalização aplicada (acentos/símbolos removidos). Se divergência, revisar abreviações do fornecedor."
-  ));
-
-  // Atualiza natOps no painel
   document.getElementById("natOps").value =
     `Remessa: ${normalizeText(state.remessa.natOp)||"—"} | Venda: ${state.venda ? (normalizeText(state.venda.natOp)||"—") : "—"}`;
 
@@ -914,12 +1041,12 @@ function validarTudo(){
 }
 
 /* =========================
-   UI render + messaging
+   RENDER
 ========================= */
 function renderRules(rules){
   const body = document.getElementById("rulesBody");
   body.innerHTML = "";
-  for(const r of rules){
+  rules.forEach(r => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><b>${escapeHtml(r.name)}</b></td>
@@ -927,7 +1054,7 @@ function renderRules(rules){
       <td>${escapeHtml(r.detail)}</td>
     `;
     body.appendChild(tr);
-  }
+  });
 }
 
 function buildMensagemFornecedor(rules){
@@ -935,59 +1062,52 @@ function buildMensagemFornecedor(rules){
   const warns = rules.filter(r => r.status === "WARN");
 
   if(erros.length === 0){
-    let msg = `✅ Documentos aprovados.\n\nAgendamento confirmado.\n`;
+    let txt = "✅ Documentos aprovados.\n\nAgendamento confirmado.\n";
     if(warns.length){
-      msg += `\n⚠️ Observações (não bloqueantes):\n` + warns.map(w => `• ${w.name}: ${w.detail}`).join("\n") + "\n";
+      txt += "\n⚠️ Observações:\n" + warns.map(w => `• ${w.name} — ${w.detail}`).join("\n");
     }
-    return msg;
+    return txt;
   }
 
-  const linhas = erros.map(e => `❌ ${e.name} — ${e.detail}`);
-  let msg = `❌ Reprovado\n\nAjuste os pontos abaixo:\n\n${linhas.join("\n")}\n`;
-
+  let txt = "❌ Reprovado\n\nAjuste os pontos abaixo:\n\n";
+  txt += erros.map(e => `• ${e.name} — ${e.detail}`).join("\n");
   if(warns.length){
-    msg += `\n⚠️ Observações:\n` + warns.map(w => `• ${w.name}: ${w.detail}`).join("\n") + "\n";
+    txt += "\n\n⚠️ Observações:\n" + warns.map(w => `• ${w.name} — ${w.detail}`).join("\n");
   }
-  return msg;
+  return txt;
 }
 
-function setResultado(aprovado){
-  const el = document.getElementById("resultadoBig");
-  const statusGeral = document.getElementById("statusGeral");
+function setResultado(rules){
+  const aprovado = rules.length > 0 && !rules.some(r => r.status === "ERRO");
+  const badge = document.getElementById("resultadoBig");
+  const input = document.getElementById("statusGeral");
+
   if(aprovado){
-    el.classList.add("ok");
-    el.textContent = "✅ APROVADO";
-    statusGeral.value = "Aprovado";
+    badge.classList.add("ok");
+    badge.textContent = "✅ APROVADO";
+    input.value = "Aprovado";
   }else{
-    el.classList.remove("ok");
-    el.textContent = "❌ REPROVADO";
-    statusGeral.value = "Reprovado";
+    badge.classList.remove("ok");
+    badge.textContent = "❌ REPROVADO";
+    input.value = "Reprovado";
   }
 }
 
 /* =========================
-   Export CSV
+   EXPORT
 ========================= */
 function exportCsv(){
-  if(!state.lastRules || state.lastRules.length === 0){
+  if(!state.lastRules.length){
     alert("Valide antes de exportar.");
     return;
   }
-  const rows = [
-    ["Regra","Status","Detalhe"],
-    ...state.lastRules.map(r => [r.name, r.status, r.detail])
-  ];
-
-  const csv = rows.map(r =>
-    r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(";")
-  ).join("\n");
-
+  const rows = [["Regra","Status","Detalhe"], ...state.lastRules.map(r => [r.name, r.status, r.detail])];
+  const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(";")).join("\n");
   const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  const nome = "relatorio_validacao_" + new Date().toISOString().slice(0,10) + ".csv";
   a.href = url;
-  a.download = nome;
+  a.download = "relatorio_validacao.csv";
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -995,65 +1115,77 @@ function exportCsv(){
 }
 
 /* =========================
-   Integração com Portal / WMS (sem mudar layout)
-   - portal pode chamar: window.getValidacaoPayload()
-   - ou escutar: postMessage ao aprovar
+   SAVE HISTORICO
 ========================= */
-function buildIntegrationPayload(){
-  const aprovado = state.lastRules.length ? state.lastRules.every(r => r.status !== "ERRO") : false;
+function salvarHistorico(){
+  if(!state.lastRules.length){
+    alert("Valide antes de salvar no histórico.");
+    return;
+  }
 
-  const payload = {
-    tool: "validador-fiscal",
-    version: "v4.0",
-    approved: aprovado,
-    timestamp: new Date().toISOString(),
-    remessa: state.remessa ? {
-      chave: state.remessa.chave || null,
-      nNF: state.remessa.nNF || null,
-      emitCNPJ: onlyDigits(state.remessa.emitCnpj) || null,
-      emitUF: state.remessa.emitUF || null,
-      destCNPJ: onlyDigits(state.remessa.destDoc) || null,
-      cep: onlyDigits(state.remessa.cep) || null,
-      bairro: normalizeText(state.remessa.bairro) || null,
-      vProd: state.remessa.vProdTotal || 0,
-      qTotal: state.remessa.qTotal || 0
-    } : null,
-    venda: state.venda ? {
-      chave: state.venda.chave || null,
-      nNF: state.venda.nNF || null,
-      emitCNPJ: onlyDigits(state.venda.emitCnpj) || null,
-      destCNPJ: onlyDigits(state.venda.destDoc) || null,
-      vProd: state.venda.vProdTotal || 0,
-      qTotal: state.venda.qTotal || 0,
-      itens: (state.venda.itens || []).map(it => ({
-        cProd: it.cProd || null,
-        xProd: it.xProd || null,
-        ncm: it.NCM || null,
-        cfop: it.CFOP || null,
-        qCom: it.qCom || 0,
-        vProd: it.vProd || 0,
-        pICMS: it.pICMS || 0
-      }))
-    } : null,
-    depositantesLoaded: state.depositantesSet.size,
-    rules: (state.lastRules || []).map(r => ({name:r.name, status:r.status, detail:r.detail}))
-  };
+  const status = state.lastRules.some(r => r.status === "ERRO") ? "REPROVADO" : "APROVADO";
+  const hasWarn = state.lastRules.some(r => r.status === "WARN");
 
-  return payload;
+  state.history.unshift({
+    date: new Date().toLocaleString("pt-BR"),
+    nfRemessa: state.remessa?.nNF || "",
+    nfVenda: state.venda?.nNF || "",
+    status,
+    hasWarn,
+    fornecedor: state.remessa?.emitNome || "",
+    cliente: state.venda?.destNome || state.remessa?.destNome || ""
+  });
+
+  saveHistory();
+  refreshHistoryUI();
+  alert("Validação salva no histórico.");
 }
 
-window.getValidacaoPayload = function(){
-  return state.lastPayload || null;
-};
+/* =========================
+   LISTA PRODUTOS + NCM
+========================= */
+function montarListaItensNCM(){
+  const campo = document.getElementById("listaProdutosNCM");
+  if(!campo) return;
+
+  let itens = [];
+
+  if(state.venda && state.venda.itens){
+    itens = state.venda.itens;
+  } else if(state.remessa && state.remessa.itens){
+    itens = state.remessa.itens;
+  }
+
+  if(!itens.length){
+    campo.value = "Nenhum item encontrado no XML.";
+    return;
+  }
+
+  let texto = "Produto | Descrição | NCM\n";
+  texto += "------------------------------------------\n";
+
+  itens.forEach(it => {
+    const cod = it.cProd || "-";
+    const desc = it.xProd || "-";
+    const ncm = it.NCM || "-";
+
+    texto += `${cod} | ${desc} | ${ncm}\n`;
+  });
+
+  campo.value = texto;
+}
 
 /* =========================
-   Events + init
+   UI
 ========================= */
 function setFixedFields(){
   document.getElementById("cnpjMundial").value = CFG.CNPJ_MUNDIAL;
   document.getElementById("enderecoBase").value = CFG.ENDERECO_BASE;
   document.getElementById("cepAceito").value = CFG.CEP_ACEITO;
   document.getElementById("bairrosAceitos").value = CFG.BAIRROS_ACEITOS.join(" / ");
+  document.getElementById("cfgAllowedPrefixes").value = NCM_ENGINE.allowedPrefixes.join(", ");
+  document.getElementById("cfgKeywordRules").value =
+    NCM_ENGINE.keywordRules.map(r => `${r.keywords.join(" / ")} => ${r.expected.join(" / ")}`).join("\n");
 }
 
 function limparTudo(){
@@ -1062,79 +1194,242 @@ function limparTudo(){
   state.remessa = null;
   state.venda = null;
   state.lastRules = [];
-  state.lastPayload = null;
 
   document.getElementById("badgeRemessa").textContent = "não carregado";
   document.getElementById("badgeVenda").textContent = "não carregado";
   document.getElementById("nameRemessa").textContent = "—";
   document.getElementById("nameVenda").textContent = "—";
   document.getElementById("msgFornecedor").value = "";
+  document.getElementById("listaProdutosNCM").value = "";
   document.getElementById("statusGeral").value = "Aguardando validação";
   document.getElementById("depositanteVenda").value = "—";
   document.getElementById("natOps").value = "—";
   document.getElementById("infoChave").textContent = "Chave Remessa: —";
   document.getElementById("infoNF").textContent = "NF Remessa: — • NF Venda: —";
   renderRules([]);
-  setResultado(false);
+  setResultado([]);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  setFixedFields();
-  renderRules([]);
-  setResultado(false);
+/* =========================
+   TABS
+========================= */
+function initTabs(){
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.tab).classList.add("active");
+    });
+  });
+}
 
-  // Botões abrem inputs (corrige “não abre”)
+/* =========================
+   VALIDAÇÃO EM LOTE
+========================= */
+function classificarTipoDocumento(nfeObj){
+  const nat = normalizeText(nfeObj.natOp || "");
+
+  if(startsWithAny(nat, CFG.REMESSA_PREFIXOS_OK)) return "REMESSA";
+  if(startsWithAny(nat, CFG.VENDA_PREFIXOS_OK)) return "VENDA";
+
+  return "OUTRO";
+}
+
+function atualizarResumoLote(){
+  document.getElementById("infoLoteArquivos").textContent = "Arquivos carregados: " + state.loteDocs.length;
+  document.getElementById("infoLoteRemessas").textContent = "Remessas identificadas: " + state.loteRemessas.length;
+  document.getElementById("infoLoteVendas").textContent = "Vendas identificadas: " + state.loteVendas.length;
+  document.getElementById("infoLotePares").textContent = "Pares encontrados: " + state.loteResultados.length;
+}
+
+function limparTabelaLote(){
+  const body = document.getElementById("loteBody");
+  if(body) body.innerHTML = "";
+}
+
+function renderLoteResultados(){
+  const body = document.getElementById("loteBody");
+  body.innerHTML = "";
+
+  state.loteResultados.forEach(item => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(item.nfRemessa || "—")}</td>
+      <td>${escapeHtml(item.nfVenda || "—")}</td>
+      <td><span class="pill ${item.status === "OK" ? "ok" : item.status === "WARN" ? "warn" : "erro"}">${escapeHtml(item.status)}</span></td>
+      <td>${escapeHtml(item.fornecedor || "—")}</td>
+      <td>${escapeHtml(item.resumo || "—")}</td>
+    `;
+    body.appendChild(tr);
+  });
+
+  atualizarResumoLote();
+}
+
+function gerarChavePareamento(nfeObj){
+  const emit = onlyDigits(nfeObj.emitCnpj || "");
+  const qtd = Number(nfeObj.qTotal || 0).toFixed(4);
+  const val = Number(nfeObj.vProdTotal || 0).toFixed(2);
+  return `${emit}|${qtd}|${val}`;
+}
+
+function parearLote(){
+  const vendasMap = new Map();
+
+  state.loteVendas.forEach(v => {
+    const chave = gerarChavePareamento(v);
+    if(!vendasMap.has(chave)) vendasMap.set(chave, []);
+    vendasMap.get(chave).push(v);
+  });
+
+  state.loteResultados = [];
+
+  state.loteRemessas.forEach(r => {
+    const chave = gerarChavePareamento(r);
+    const candidatas = vendasMap.get(chave) || [];
+    const vendaPareada = candidatas.length ? candidatas.shift() : null;
+
+    const backupRemessa = state.remessa;
+    const backupVenda = state.venda;
+
+    state.remessa = r;
+    state.venda = vendaPareada;
+
+    const regras = validarTudo();
+    const erros = regras.filter(x => x.status === "ERRO");
+    const warns = regras.filter(x => x.status === "WARN");
+
+    let status = "OK";
+    if(erros.length) status = "ERRO";
+    else if(warns.length) status = "WARN";
+
+    let resumo = "Aprovado";
+    if(erros.length){
+      resumo = erros.slice(0,3).map(e => e.name).join(" | ");
+    } else if(warns.length){
+      resumo = warns.slice(0,3).map(w => w.name).join(" | ");
+    }
+
+    state.loteResultados.push({
+      nfRemessa: r.nNF || "",
+      nfVenda: vendaPareada?.nNF || "",
+      status,
+      fornecedor: r.emitNome || "",
+      resumo
+    });
+
+    state.remessa = backupRemessa;
+    state.venda = backupVenda;
+  });
+
+  renderLoteResultados();
+}
+
+async function importarLoteArquivos(files){
+  state.loteDocs = [];
+  state.loteRemessas = [];
+  state.loteVendas = [];
+  state.loteResultados = [];
+  limparTabelaLote();
+
+  for(const f of files){
+    try{
+      const text = await f.text();
+      const doc = parseXml(text);
+      const obj = extractNFe(doc);
+      const tipo = classificarTipoDocumento(obj);
+
+      state.loteDocs.push({
+        nome: f.name,
+        tipo,
+        doc,
+        obj
+      });
+
+      if(tipo === "REMESSA") state.loteRemessas.push(obj);
+      if(tipo === "VENDA") state.loteVendas.push(obj);
+    }catch(err){
+      console.error("Erro ao ler arquivo do lote:", f.name, err);
+    }
+  }
+
+  atualizarResumoLote();
+}
+
+function exportCsvLote(){
+  if(!state.loteResultados.length){
+    alert("Valide o lote antes de exportar.");
+    return;
+  }
+
+  const rows = [
+    ["NF Remessa","NF Venda","Status","Fornecedor","Resumo"],
+    ...state.loteResultados.map(x => [x.nfRemessa, x.nfVenda, x.status, x.fornecedor, x.resumo])
+  ];
+
+  const csv = rows.map(r =>
+    r.map(x => `"${String(x || "").replace(/"/g,'""')}"`).join(";")
+  ).join("\n");
+
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "relatorio_validacao_lote.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  initTabs();
+  setFixedFields();
+  refreshHistoryUI();
+  limparTudo();
+
   document.getElementById("btnPickRemessa").addEventListener("click", () => document.getElementById("fileRemessa").click());
   document.getElementById("btnPickVenda").addEventListener("click", () => document.getElementById("fileVenda").click());
   document.getElementById("btnPickDepositantes").addEventListener("click", () => document.getElementById("fileDepositantes").click());
 
-  // Import Remessa
   document.getElementById("fileRemessa").addEventListener("change", async (e) => {
-    const f = e.target.files && e.target.files[0];
+    const f = e.target.files[0];
     if(!f) return;
     try{
       const text = await f.text();
-      const doc = parseXml(text);
-      state.remessaDoc = doc;
-      state.remessa = extractNFe(doc);
-
+      state.remessaDoc = parseXml(text);
+      state.remessa = extractNFe(state.remessaDoc);
       document.getElementById("badgeRemessa").textContent = "carregado";
       document.getElementById("nameRemessa").textContent = f.name;
     }catch(err){
-      alert("Falha ao ler XML Remessa: " + (err.message || err));
-      state.remessa = null;
-      document.getElementById("badgeRemessa").textContent = "erro";
-      document.getElementById("nameRemessa").textContent = "—";
+      alert("Falha ao ler XML Remessa: " + err.message);
     }finally{
       e.target.value = "";
     }
   });
 
-  // Import Venda
   document.getElementById("fileVenda").addEventListener("change", async (e) => {
-    const f = e.target.files && e.target.files[0];
+    const f = e.target.files[0];
     if(!f) return;
     try{
       const text = await f.text();
-      const doc = parseXml(text);
-      state.vendaDoc = doc;
-      state.venda = extractNFe(doc);
-
+      state.vendaDoc = parseXml(text);
+      state.venda = extractNFe(state.vendaDoc);
       document.getElementById("badgeVenda").textContent = "carregado";
       document.getElementById("nameVenda").textContent = f.name;
     }catch(err){
-      alert("Falha ao ler XML Venda: " + (err.message || err));
-      state.venda = null;
-      document.getElementById("badgeVenda").textContent = "erro";
-      document.getElementById("nameVenda").textContent = "—";
+      alert("Falha ao ler XML Venda: " + err.message);
     }finally{
       e.target.value = "";
     }
   });
 
-  // Import Depositantes
   document.getElementById("fileDepositantes").addEventListener("change", async (e) => {
-    const f = e.target.files && e.target.files[0];
+    const f = e.target.files[0];
     if(!f) return;
     try{
       const text = await f.text();
@@ -1142,53 +1437,54 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("infoDepositantes").textContent = "Depositantes carregados: " + state.depositantesSet.size;
       alert("Depositantes importados: " + state.depositantesSet.size);
     }catch(err){
-      alert("Falha ao importar depositantes: " + (err.message || err));
+      alert("Falha ao importar depositantes: " + err.message);
     }finally{
       e.target.value = "";
     }
   });
 
-  // Validar
   document.getElementById("btnValidar").addEventListener("click", () => {
-    const rules = validarTudo();
-    state.lastRules = rules;
-    renderRules(rules);
-
-    const aprovado = rules.length ? rules.every(r => r.status !== "ERRO") : false;
-    setResultado(aprovado);
-
-    const msg = buildMensagemFornecedor(rules);
-    document.getElementById("msgFornecedor").value = msg;
-
-    // payload integração
-    state.lastPayload = buildIntegrationPayload();
-
-    // postMessage para portal
-    try{
-      window.parent?.postMessage?.(
-        { event: CFG.INTEGRATION.POSTMESSAGE_EVENT, payload: state.lastPayload },
-        CFG.INTEGRATION.POSTMESSAGE_TARGET_ORIGIN
-      );
-    }catch(e){}
+    state.lastRules = validarTudo();
+    renderRules(state.lastRules);
+    setResultado(state.lastRules);
+    document.getElementById("msgFornecedor").value = buildMensagemFornecedor(state.lastRules);
+    montarListaItensNCM();
   });
 
-  // Export
   document.getElementById("btnExport").addEventListener("click", exportCsv);
+  document.getElementById("btnSalvarHistorico").addEventListener("click", salvarHistorico);
+  document.getElementById("btnLimpar").addEventListener("click", limparTudo);
 
-  // Limpar
-  document.getElementById("btnLimpar").addEventListener("click", () => {
-    if(confirm("Limpar tudo?")){
-      const keep = state.depositantesSet;
-      limparTudo();
-      state.depositantesSet = keep; // mantém depositantes
-      document.getElementById("infoDepositantes").textContent = "Depositantes carregados: " + state.depositantesSet.size;
-      setFixedFields();
-    }
+  document.getElementById("btnPickLote").addEventListener("click", () => {
+    document.getElementById("fileLote").click();
   });
 
-  // initial
-  document.getElementById("infoDepositantes").textContent = "Depositantes carregados: " + state.depositantesSet.size;
+  document.getElementById("fileLote").addEventListener("change", async (e) => {
+    const files = Array.from(e.target.files || []);
+    if(!files.length) return;
+
+    await importarLoteArquivos(files);
+    e.target.value = "";
+  });
+
+  document.getElementById("btnValidarLote").addEventListener("click", () => {
+    if(!state.loteDocs.length){
+      alert("Importe os XMLs do lote primeiro.");
+      return;
+    }
+    parearLote();
+  });
+
+  document.getElementById("btnExportLote").addEventListener("click", exportCsvLote);
 });
+
+/* =========================
+   IMPORT DEPOSITANTES
+========================= */
+function parseDepositantesText(text){
+  const digits = text.match(/\d{14}/g) || [];
+  return new Set(digits);
+}
 </script>
 </body>
 </html>
