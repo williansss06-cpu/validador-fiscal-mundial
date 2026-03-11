@@ -389,7 +389,7 @@
           <button class="tab-btn active" data-tab="tab-validacao">Validação Individual</button>
           <button class="tab-btn" data-tab="tab-lote">Validação em Lote</button>
           <button class="tab-btn" data-tab="tab-historico">Histórico</button>
-          <button class="tab-btn" data-tab="tab-config">Configurações</button>
+          <button class="tab-btn" id="btnConfig">Configurações</button</button>
         </div>
 
         <!-- ABA 1 -->
@@ -1485,6 +1485,25 @@ function parseDepositantesText(text){
   const digits = text.match(/\d{14}/g) || [];
   return new Set(digits);
 }
+  document.getElementById("btnConfig").addEventListener("click", () => {
+
+  const senha = prompt("Digite a senha de administrador:");
+
+  if(senha === "admin123"){
+
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+
+    document.getElementById("btnConfig").classList.add("active");
+    document.getElementById("tab-config").classList.add("active");
+
+  }else{
+
+    alert("Acesso negado.");
+
+  }
+
+});
 </script>
 </body>
 </html>
