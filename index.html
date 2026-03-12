@@ -582,19 +582,76 @@
 
         <!-- ABA 4 -->
         <div class="tab" id="tab-config">
-          <div class="card">
-            <h2>⚙️ Configurações do motor NCM</h2>
 
-            <div class="fields">
-              <div class="field" style="grid-column:1/-1">
-                <label>Prefixos de NCM aceitos para logística promocional</label>
-                <textarea id="cfgAllowedPrefixes" readonly></textarea>
-              </div>
+<div class="card">
+<h2>🏢 Dados do destinatário</h2>
 
-              <div class="field" style="grid-column:1/-1">
-                <label>Regras de palavras-chave x NCM</label>
-                <textarea id="cfgKeywordRules" readonly></textarea>
-              </div>
+<div class="fields">
+
+<div class="field">
+<label>CNPJ Mundial</label>
+<input id="cfgCnpj" readonly>
+</div>
+
+<div class="field">
+<label>CEP aceito</label>
+<input id="cfgCep" readonly>
+</div>
+
+<div class="field" style="grid-column:1/-1">
+<label>Bairros aceitos</label>
+<textarea id="cfgBairros" readonly></textarea>
+</div>
+
+</div>
+</div>
+
+
+<div class="card">
+<h2>📦 Regras fiscais</h2>
+
+<div class="fields">
+
+<div class="field">
+<label>CFOP permitidos SP</label>
+<input id="cfgCfopSP" readonly>
+</div>
+
+<div class="field">
+<label>CFOP permitidos fora SP</label>
+<input id="cfgCfopFora" readonly>
+</div>
+
+<div class="field">
+<label>CST / CSOSN permitidos</label>
+<input id="cfgCst" readonly>
+</div>
+
+<div class="field">
+<label>Tolerância de valor</label>
+<input id="cfgTolerancia" readonly>
+</div>
+
+</div>
+</div>
+
+
+<div class="card">
+<h2>⚙️ Motor inteligente NCM</h2>
+
+<div class="field">
+<label>Prefixos de NCM aceitos</label>
+<textarea id="cfgAllowedPrefixes" readonly></textarea>
+</div>
+
+<div class="field">
+<label>Regras de palavras-chave × NCM</label>
+<textarea id="cfgKeywordRules" readonly></textarea>
+</div>
+
+</div>
+
+</div>
             </div>
           </div>
         </div>
