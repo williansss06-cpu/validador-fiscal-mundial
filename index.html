@@ -3,1565 +3,1124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal de Validação Fiscal</title>
+  <title>Frete PRO TMS - Consolidação Profissional</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
-    :root{
-  --orange:#6366f1;
-  --orange2:#8b5cf6;
-  --bg:#f8fafc;
-  --card:#ffffff;
-  --text:#0f172a;
-  --muted:#64748b;
-  --line:#e2e8f0;
-  --ok:#22c55e;
-  --warn:#f59e0b;
-  --err:#ef4444;
-  --shadow:0 10px 30px rgba(0,0,0,0.08);
-}
-
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:var(--bg);
-      color:var(--text);
-    }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      gap:16px;
-      padding:16px 20px;
-      background:#fff;
-      border-bottom:1px solid var(--line);
-    }
-
-    .topbar h1{
-      margin:0;
-      font-size:26px;
-      font-weight:800;
-    }
-
-    .sub{
-      color:var(--muted);
-      font-size:13px;
-      margin-top:2px;
-    }
-
-    .band{
-      background:linear-gradient(90deg,var(--orange),var(--orange2));
-      padding:20px 0 28px;
-    }
-
-    .container{
-      max-width:1220px;
-      margin:0 auto;
-      padding:0 16px 30px;
-    }
-
-    .panel{
-      background:#fff;
-      border-radius:22px;
-      padding:18px;
-      margin-top:-24px;
-      box-shadow:var(--shadow);
-      border:1px solid rgba(255,255,255,.4);
-    }
-
-    .tabs{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:18px;
-    }
-
-    .tab-btn{
-      border:2px solid var(--orange2);
-      background:#fff;
-      color:var(--orange);
-      padding:10px 14px;
-      border-radius:14px;
-      font-weight:800;
-      cursor:pointer;
-    }
-
-    .tab-btn.active{
-      background:var(--orange);
-      color:#fff;
-      border-color:var(--orange);
-    }
-
-    .tab{
-      display:none;
-    }
-
-    .tab.active{
-      display:block;
-    }
-
-    .btnrow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:12px;
-      align-items:center;
-      margin-bottom:16px;
-    }
-
-    .btn{
-      border:2px solid var(--orange2);
-      background:#fff;
-      color:var(--orange);
-      padding:12px 14px;
-      border-radius:14px;
-      font-weight:800;
-      cursor:pointer;
-      min-height:48px;
-    }
-
-    .btn.primary{
-  background:linear-gradient(135deg,#6366f1,#8b5cf6);
-  color:#fff;
-  border:none;
-}
-    }
-
-    .btn.ghost{
-      border-color:#cbd5e1;
-      color:#111827;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:1.2fr 1fr;
-      gap:16px;
-      margin-top:12px;
-    }
-
-    @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
-    }
-
-    .card{
-  background:#ffffff;
-  border:1px solid #e2e8f0;
-  border-radius:16px;
-  padding:18px;
-  box-shadow:0 8px 30px rgba(15,23,42,0.08);
-  margin-bottom:16px;
-}
-    }
-
-    .card h2{
-      margin:0 0 10px;
-      font-size:16px;
-      font-weight:900;
-    }
-
-    .filegrid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-top:8px;
-    }
-
-    @media (max-width: 800px){
-      .filegrid{grid-template-columns:1fr}
-    }
-
-    .filebox{
-      border:1px dashed #d1d5db;
-      border-radius:14px;
-      padding:12px;
-      background:#fff;
-    }
-
-    .filebox .top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:8px;
-    }
-
-    .badge{
-      font-size:11px;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#f8fafc;
-      font-weight:800;
-    }
-
-    .name{
-      font-size:12px;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .miniRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:10px;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:700;
-    }
-
-    .miniRow span{
-      background:#f8fafc;
-      border:1px solid var(--line);
-      padding:6px 10px;
-      border-radius:999px;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      border:1px solid var(--line);
-      border-radius:14px;
-      overflow:hidden;
-    }
-
-    thead th{
-      text-align:left;
-      font-size:12px;
-      background:#f9fafb;
-      padding:10px;
-      border-bottom:1px solid var(--line);
-    }
-
-    tbody td{
-      padding:11px 10px;
-      border-bottom:1px solid var(--line);
-      vertical-align:top;
-      font-size:13px;
-    }
-
-    tbody tr:last-child td{
-      border-bottom:none;
-    }
-
-    .pill{
-      display:inline-flex;
-      min-width:64px;
-      justify-content:center;
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:12px;
-      border:1px solid transparent;
-      text-transform:uppercase;
-    }
-
-    .pill.ok{
-      background:rgba(22,163,74,.08);
-      color:var(--ok);
-      border-color:rgba(22,163,74,.18);
-    }
-
-    .pill.warn{
-      background:rgba(245,158,11,.1);
-      color:var(--warn);
-      border-color:rgba(245,158,11,.18);
-    }
-
-    .pill.erro{
-      background:rgba(220,38,38,.08);
-      color:var(--err);
-      border-color:rgba(220,38,38,.18);
-    }
-
-    .resultBig{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-weight:1000;
-      padding:10px 14px;
-      border-radius:999px;
-      border:2px solid rgba(220,38,38,.25);
-      background:rgba(220,38,38,.06);
-      color:var(--err);
-      margin-bottom:10px;
-    }
-
-    .resultBig.ok{
-      border-color:rgba(22,163,74,.25);
-      background:rgba(22,163,74,.08);
-      color:var(--ok);
-    }
-
-    .fields{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    @media (max-width: 700px){
-      .fields{grid-template-columns:1fr}
-    }
-
-    .field label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin:0 0 6px 2px;
-      font-weight:700;
-    }
-
-    .field input,.field textarea,.field select{
-      width:100%;
-      padding:11px 12px;
-      border:1px solid var(--line);
-      border-radius:12px;
-      outline:none;
-      font-size:14px;
-      background:#fbfbfc;
-    }
-
-    .field textarea{
-      min-height:130px;
-      resize:vertical;
-      background:#fff;
-    }
-
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-      margin-bottom:16px;
-    }
-
-    @media (max-width: 900px){
-      .stats{grid-template-columns:repeat(2,1fr)}
-    }
-
-    .stat{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .stat .k{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:700;
-    }
-
-    .stat .v{
-      margin-top:8px;
-      font-size:24px;
-      font-weight:900;
-    }
-
-    .small{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .sep{
-      height:1px;
-      background:var(--line);
-      margin:14px 0;
-    }
-
-    .footerNote{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:10px;
-    }
+    * { box-sizing: border-box; }
+    :root{--bg:#dfe5ec;--sidebar:#071533;--sidebar2:#162748;--sidebar3:#22365f;--card:#f8fafc;--line:#e2e8f0;--text:#0f172a;--muted:#64748b;--blue:#2563eb;--green:#22c55e;--orange:#f59e0b;--red:#ef4444;--purple:#8b5cf6;}
+    body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text)}
+    .app{display:flex;min-height:100vh}.sidebar{width:280px;background:var(--sidebar);color:#fff;padding:22px 18px;position:sticky;top:0;height:100vh;overflow:auto}
+    .brand{display:flex;align-items:center;gap:12px;font-size:26px;font-weight:700;margin-bottom:28px}.brand span{font-size:30px}
+    .nav-btn{width:100%;padding:14px 16px;margin-bottom:12px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:var(--sidebar2);color:#fff;font-size:16px;cursor:pointer;transition:.2s;text-align:center}
+    .nav-btn:hover,.nav-btn.active{background:var(--sidebar3);border-color:rgba(255,255,255,.25)}.content{flex:1;padding:26px}.tab{display:none}.tab.active{display:block}
+    .card{background:var(--card);border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 2px 8px rgba(15,23,42,.06)}.card h2,.card h3,.card h4{margin-top:0;margin-bottom:18px}
+    .grid{display:grid;gap:12px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-5{grid-template-columns:repeat(5,minmax(0,1fr))}.grid-6{grid-template-columns:repeat(6,minmax(0,1fr))}
+    .field{display:flex;flex-direction:column;gap:6px}.field label{font-size:14px;font-weight:600;color:#334155}
+    input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:14px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.btn{border:none;border-radius:10px;padding:12px 18px;font-size:14px;cursor:pointer;transition:.2s;font-weight:600}.btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:#1d4ed8}.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#16a34a}.btn-orange{background:var(--orange);color:#fff}.btn-red{background:var(--red);color:#fff}.btn-purple{background:var(--purple);color:#fff}.btn-gray{background:#475569;color:#fff}
+    .table-wrap{overflow:auto;margin-top:14px;background:#fff;border-radius:12px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border:1px solid var(--line);text-align:left;vertical-align:top;font-size:13px}th{background:#eef2f7;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}.status{margin-top:12px;font-weight:700}.ok{color:#15803d}.warn{color:#b45309}.err{color:#b91c1c}.info{color:#1d4ed8}
+    .metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}.metric{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(15,23,42,.05)}.metric .label{font-size:13px;color:var(--muted);margin-bottom:8px}.metric .value{font-size:24px;font-weight:800;color:var(--text)}
+    #map{width:100%;height:520px;border-radius:14px;background:#cbd5e1;display:flex;align-items:center;justify-content:center;color:#334155;font-weight:600}.checkbox-row{display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin-top:8px}
+    .route-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}.route-title{font-size:16px;font-weight:700;margin-bottom:8px}.corridor-badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px;background:#e0e7ff;color:#3730a3}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}.pill-green{background:#dcfce7;color:#166534}.pill-yellow{background:#fef3c7;color:#92400e}.pill-purple{background:#ede9fe;color:#6d28d9}.pill-blue{background:#dbeafe;color:#1d4ed8}
+    .inline-alert{padding:12px 14px;border-radius:10px;background:#eef6ff;border:1px solid #bfdbfe;color:#1e3a8a;margin-top:12px;font-size:13px}.map-side-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:16px}.route-editor{background:#fff;border-radius:14px;padding:14px;border:1px solid var(--line);max-height:520px;overflow:auto}
+    .pedido-chip{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;background:#f8fafc;position:relative;transition:0.2s}.pedido-chip:hover{background:#fff}.btn-icon-group{display:flex;gap:6px;margin-top:6px;justify-content:flex-end}.btn-icon-group button{background:none;border:none;cursor:pointer;font-size:14px;padding:4px 8px;border-radius:6px;transition:0.2s}.btn-icon-group button.btn-remove{color:var(--red);background:#fee2e2}.btn-icon-group button.btn-remove:hover{background:#fecaca}.btn-icon-group button.btn-move{color:var(--blue);background:#e6f0ff}.btn-icon-group button.btn-move:hover{background:#cce4ff}
+    .decision-box{margin-top:10px;padding:10px;background:#f8fafc;border-left:4px solid var(--blue);border-radius:10px;font-size:13px}.critical-item{background:#fff3e0;border-left:4px solid var(--orange);padding:8px;margin-top:8px;border-radius:8px}
+    .modal{display:none;position:fixed;z-index:1000;inset:0;overflow:auto;background-color:rgba(0,0,0,.5)}.modal-content{background-color:#fefefe;margin:5% auto;padding:20px;border:1px solid #888;width:80%;max-width:900px;border-radius:16px;max-height:80vh;overflow-y:auto}.close{color:#aaa;float:right;font-size:28px;font-weight:bold;cursor:pointer}.close:hover{color:black}
+    .ocupacao-box { margin-top: 15px; margin-bottom: 15px; }
+    .ocupacao-label { font-size: 13px; margin-bottom: 5px; color: #475569; font-weight: 600; }
+    .ocupacao-bar { width: 100%; height: 20px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+    .ocupacao-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+    .ocupacao-text { font-size: 13px; margin-top: 5px; font-weight: bold; color: #0f172a; text-align: right; }
+    @media (max-width:1200px){.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-5,.grid-4,.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}.map-side-grid{grid-template-columns:1fr}}
+    @media (max-width:768px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.metrics,.grid-2,.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div>
-      <h1>Portal de Validação Fiscal</h1>
-      <div class="sub">Validação fiscal, inteligência de NCM, histórico local e preparação para cobertura / WMS</div>
-    </div>
-  </div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span>🚚</span> Frete PRO TMS</div>
+    <button class="nav-btn active" onclick="showTab('parametros', this)">Parâmetros</button>
+    <button class="nav-btn" onclick="showTab('pedidos', this)">Pedidos</button>
+    <button class="nav-btn" onclick="showTab('planejamento', this)">Planejamento</button>
+    <button class="nav-btn" onclick="showTab('resultado', this)">Resultado</button>
+  </aside>
 
-  <div class="band">
-    <div class="container">
-      <div class="panel">
-
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="tab-validacao">Validação Individual</button>
-          <button class="tab-btn" data-tab="tab-lote">Validação em Lote</button>
-          <button class="tab-btn" data-tab="tab-historico">Histórico</button>
-          <button class="tab-btn" id="btnConfig" data-tab="tab-config">Configurações</button>
+  <main class="content">
+    <section id="parametros" class="tab active">
+      <div class="card">
+        <div class="row" style="justify-content: space-between;">
+          <h2>Cadastro de Veículos</h2>
+          <div><button class="btn btn-blue" onclick="adicionarVeiculoPadrao()">+ Adicionar Veículo Leve Padrão</button></div>
         </div>
-
-        <!-- ABA 1 -->
-        <div class="tab active" id="tab-validacao">
-
-          <div class="btnrow">
-            <button class="btn" id="btnPickRemessa" type="button">📥 Importar XML Remessa</button>
-            <button class="btn" id="btnPickVenda" type="button">📥 Importar XML Venda</button>
-            <button class="btn" id="btnPickDepositantes" type="button">📄 Importar depositantes (CSV/TXT)</button>
-
-            <button class="btn primary" id="btnValidar" type="button">✅ Validar</button>
-            <button class="btn ghost" id="btnExport" type="button">📊 Exportar relatório (CSV)</button>
-            <button class="btn ghost" id="btnSalvarHistorico" type="button">💾 Salvar no histórico</button>
-            <button class="btn ghost" id="btnLimpar" type="button">🧹 Limpar</button>
-
-            <input type="file" id="fileRemessa" accept=".xml" style="display:none" />
-            <input type="file" id="fileVenda" accept=".xml" style="display:none" />
-            <input type="file" id="fileDepositantes" accept=".csv,.txt" style="display:none" />
-          </div>
-
-          <div class="card">
-            <h2>📦 Importar XMLs</h2>
-
-            <div class="filegrid">
-              <div class="filebox">
-                <div class="top">
-                  <div style="font-weight:1000">XML Remessa</div>
-                  <span class="badge" id="badgeRemessa">não carregado</span>
-                </div>
-                <div class="name" id="nameRemessa">—</div>
-              </div>
-
-              <div class="filebox">
-                <div class="top">
-                  <div style="font-weight:1000">XML Venda</div>
-                  <span class="badge" id="badgeVenda">não carregado</span>
-                </div>
-                <div class="name" id="nameVenda">—</div>
-              </div>
-            </div>
-
-            <div class="miniRow">
-              <span id="infoDepositantes">Depositantes carregados: 0</span>
-              <span id="infoChave">Chave Remessa: —</span>
-              <span id="infoNF">NF Remessa: — • NF Venda: —</span>
-            </div>
-          </div>
-
-          <div class="grid">
-            <div class="card">
-              <h2>📋 Regras e validações</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width:40%">Regra</th>
-                    <th style="width:14%">Status</th>
-                    <th>Detalhe</th>
-                  </tr>
-                </thead>
-                <tbody id="rulesBody"></tbody>
-              </table>
-
-              <div class="footerNote">
-                Observação: a validação do endereço da Mundial é prática por <b>CEP + Bairro</b>. O endereço textual é referência.
-              </div>
-            </div>
-
-            <div class="card">
-              <h2>🧾 Mensagem ao fornecedor</h2>
-
-              <div id="resultadoBig" class="resultBig">❌ REPROVADO</div>
-
-              <div class="field">
-                <label>Mensagem pronta</label>
-                <textarea id="msgFornecedor"></textarea>
-              </div>
-
-              <div class="field">
-                <label>Itens da nota (Produto | Descrição | NCM)</label>
-                <textarea id="listaProdutosNCM" readonly></textarea>
-              </div>
-
-              <div class="sep"></div>
-
-              <div class="fields">
-                <div class="field">
-                  <label>CNPJ Mundial</label>
-                  <input id="cnpjMundial" readonly />
-                </div>
-
-                <div class="field">
-                  <label>Endereço Base</label>
-                  <input id="enderecoBase" readonly />
-                </div>
-
-                <div class="field">
-                  <label>CEP aceito</label>
-                  <input id="cepAceito" readonly />
-                </div>
-
-                <div class="field">
-                  <label>Bairros aceitos</label>
-                  <input id="bairrosAceitos" readonly />
-                </div>
-
-                <div class="field">
-                  <label>Status geral</label>
-                  <input id="statusGeral" readonly value="Aguardando validação" />
-                </div>
-
-                <div class="field">
-                  <label>Depositante (Venda)</label>
-                  <input id="depositanteVenda" readonly value="—" />
-                </div>
-
-                <div class="field" style="grid-column:1/-1">
-                  <label>Natureza Remessa / Venda</label>
-                  <input id="natOps" readonly value="—" />
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="grid grid-5">
+          <div class="field"><label>Veículo</label><input type="text" id="v_nome" placeholder="Ex.: Fiorino 01" /></div>
+          <div class="field"><label>M³</label><input type="number" id="v_volume" step="0.01" placeholder="12.5" /></div>
+          <div class="field"><label>Peso (kg)</label><input type="number" id="v_peso" step="0.01" placeholder="1500" /></div>
+          <div class="field"><label>Notas</label><input type="number" id="v_notas" placeholder="25" /></div>
+          <div class="field"><label>R$/km</label><input type="number" id="v_custo_km" step="0.01" placeholder="2.50" /></div>
         </div>
-
-        <!-- ABA 2 -->
-        <div class="tab" id="tab-lote">
-          <div class="card">
-            <h2>📦 Validação em lote</h2>
-
-            <div class="btnrow">
-              <button class="btn" id="btnPickLote" type="button">📂 Importar múltiplos XMLs</button>
-              <button class="btn primary" id="btnValidarLote" type="button">✅ Validar lote</button>
-              <button class="btn ghost" id="btnExportLote" type="button">📊 Exportar lote (CSV)</button>
-
-              <input type="file" id="fileLote" accept=".xml" multiple style="display:none" />
-            </div>
-
-            <div class="miniRow">
-              <span id="infoLoteArquivos">Arquivos carregados: 0</span>
-              <span id="infoLoteRemessas">Remessas identificadas: 0</span>
-              <span id="infoLoteVendas">Vendas identificadas: 0</span>
-              <span id="infoLotePares">Pares encontrados: 0</span>
-            </div>
-
-            <div class="sep"></div>
-
-            <table>
-              <thead>
-                <tr>
-                  <th>NF Remessa</th>
-                  <th>NF Venda</th>
-                  <th>Status</th>
-                  <th>Fornecedor</th>
-                  <th>Resumo</th>
-                </tr>
-              </thead>
-              <tbody id="loteBody"></tbody>
-            </table>
-          </div>
+        <div class="grid grid-3">
+          <div class="field"><label>Altura (m)</label><input type="number" id="v_altura" step="0.01" placeholder="1.30" /></div>
+          <div class="field"><label>Largura (m)</label><input type="number" id="v_largura" step="0.01" placeholder="1.60" /></div>
+          <div class="field"><label>Comprimento (m)</label><input type="number" id="v_profundidade" step="0.01" placeholder="2.50" /></div>
         </div>
-
-        <!-- ABA 3 -->
-        <div class="tab" id="tab-historico">
-          <div class="stats">
-            <div class="stat"><div class="k">Registros</div><div class="v" id="statRegistros">0</div></div>
-            <div class="stat"><div class="k">Aprovados</div><div class="v" id="statAprovados">0</div></div>
-            <div class="stat"><div class="k">Reprovados</div><div class="v" id="statReprovados">0</div></div>
-            <div class="stat"><div class="k">Com alerta</div><div class="v" id="statAlertas">0</div></div>
-          </div>
-
-          <div class="card">
-            <h2>🕘 Histórico local</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Remessa</th>
-                  <th>Venda</th>
-                  <th>Status</th>
-                  <th>Fornecedor</th>
-                  <th>Cliente</th>
-                </tr>
-              </thead>
-              <tbody id="historyBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- ABA 4 -->
-        <div class="tab" id="tab-config">
-
-<div class="card">
-<h2>🏢 Dados do destinatário</h2>
-
-<div class="fields">
-
-<div class="field">
-<label>CNPJ Mundial</label>
-<input id="cfgCnpj" readonly>
-</div>
-
-<div class="field">
-<label>CEP aceito</label>
-<input id="cfgCep" readonly>
-</div>
-
-<div class="field" style="grid-column:1/-1">
-<label>Bairros aceitos</label>
-<textarea id="cfgBairros" readonly></textarea>
-</div>
-
-</div>
-</div>
-
-
-<div class="card">
-<h2>📦 Regras fiscais</h2>
-
-<div class="fields">
-
-<div class="field">
-<label>CFOP permitidos SP</label>
-<input id="cfgCfopSP" readonly>
-</div>
-
-<div class="field">
-<label>CFOP permitidos fora SP</label>
-<input id="cfgCfopFora" readonly>
-</div>
-
-<div class="field">
-<label>CST / CSOSN permitidos</label>
-<input id="cfgCst" readonly>
-</div>
-
-<div class="field">
-<label>Tolerância de valor</label>
-<input id="cfgTolerancia" readonly>
-</div>
-
-</div>
-</div>
-
-
-<div class="card">
-<h2>⚙️ Motor inteligente NCM</h2>
-
-<div class="field">
-<label>Prefixos de NCM aceitos</label>
-<textarea id="cfgAllowedPrefixes" readonly></textarea>
-</div>
-
-<div class="field">
-<label>Regras de palavras-chave × NCM</label>
-<textarea id="cfgKeywordRules" readonly></textarea>
-</div>
-
-</div>
-
-</div>
-            </div>
-          </div>
-        </div>
-
+        <div class="row"><button class="btn btn-green" onclick="addVehicle()">Adicionar veículo</button></div>
+        <div class="table-wrap">\n<table>\n<thead>\n<tr><th>Veículo</th><th>M³</th><th>Peso</th><th>Notas</th><th>Dimensões</th><th>R$/km</th><th>Ação</th></tr>\n</thead>\n<tbody id="vehicleTableBody"></tbody>\n</table>\n</div>
+        <div id="statusBanco" class="status"></div>
       </div>
-    </div>
+
+      <div class="card">
+        <h2>Configuração - Cubagem e Consolidação</h2>
+        <div class="grid grid-4">
+          <div class="field"><label>Origem</label><input type="text" id="depot" value="Guarulhos/SP" /></div>
+          <div class="field"><label>Peso máx/rota (kg)</label><input type="number" id="cfgPesoMax" value="5000" /></div>
+          <div class="field"><label>Volume máx/rota (m³)</label><input type="number" id="cfgVolumeMax" value="20" /></div>
+          <div class="field"><label>Cubagem mínima</label><input type="number" id="cfgMinVolume" value="0.01" step="0.01" /></div>
+        </div>
+        <div class="grid grid-4">
+          <div class="field"><label>Fator cubagem (kg → m³)</label><input type="number" id="fatorCubagem" value="0.003" step="0.0005" /></div>
+          <div class="field"><label>Máx. paradas</label><input type="number" id="cfgMaxParadas" value="12" /></div>
+          <div class="field"><label>Raio de consolidação (km)</label><input type="number" id="cfgRaioKm" value="80" /></div>
+          <div class="field"><label>Ordenação</label><select id="ordenacaoParadas"><option value="data">Por data + geográfica</option><option value="mercado">Progressão geográfica</option></select></div>
+        </div>
+        <div class="inline-alert">
+          🧠 <strong>Profissional:</strong> consolidação por corredor + rodovia + CEP + litoral, com mistura controlada sem bagunçar a operação.<br>
+          📦 <strong>Fator decisório:</strong> o maior item do pedido/carga define o veículo mínimo, depois o sistema valida peso, volume e capacidade total.<br>
+          🤖 <strong>Detalhamento:</strong> cada rota traz no final o motivo da escolha do veículo e as regras aplicadas.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Corredores de Consolidação</h2>
+        <div class="grid grid-2">
+          <div><label>Vale do Paraíba</label><input type="text" id="corridor_paraiba" value="Guarulhos,São José dos Campos,Rio de Janeiro" /></div>
+          <div><label>Campinas</label><input type="text" id="corridor_campinas" value="Guarulhos,Campinas,Ribeirão Preto" /></div>
+          <div><label>Sul</label><input type="text" id="corridor_sul" value="Guarulhos,Curitiba,Porto Alegre" /></div>
+          <div><label>Minas Gerais</label><input type="text" id="corridor_mg" value="Guarulhos,Varginha,Belo Horizonte" /></div>
+          <div><label>Centro-Oeste</label><input type="text" id="corridor_co" value="Guarulhos,Goiânia,Brasília" /></div>
+          <div><label>Nordeste</label><input type="text" id="corridor_ne" value="Guarulhos,Salvador,Recife,Fortaleza" /></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Regras</h2>
+        <div class="checkbox-row">
+          <label><input type="checkbox" id="regraLeve" checked /> Rodoviário até 1000kg → liberar</label>
+          <label><input type="checkbox" id="regraPesado" checked /> Acima 1000kg → incluir (se não consolidar, aguardar)</label>
+          <label><input type="checkbox" id="regraExclusivo" checked /> Carro exclusivo → prioridade</label>
+          <label><input type="checkbox" id="regraCubagemAuto" checked /> Cubagem automática (volume=0 → estimar)</label>
+          <label><input type="checkbox" id="regraCapitalFlex" checked /> Capital pode consolidar com interior próximo</label>
+        </div>
+      </div>
+    </section>
+
+    <section id="pedidos" class="tab">
+      <div class="card">
+        <h2>Importar CSV</h2>
+        <div class="row">
+          <input type="file" id="ordersCsvFile" accept=".csv" style="flex:1;" />
+          <button class="btn btn-blue" onclick="baixarModeloPedidos()">Baixar modelo</button>
+        </div>
+        <p class="small">Colunas: OS, DESTINATARIO, CIDADE, UF, PESO BRUTO, METROCUBICO, DATAPREVISAO, OBS, CEP, CODIGO PRODUTO, PRODUTO, FOTO_URL, ALTURA, LARGURA, PROFUNDIDADE, LOGRADOURO, NUMERO, BAIRRO</p>
+      </div>
+      <div class="card">
+        <h2>Pedidos Rodoviários Leves (≤ 1000kg) <span class="pill pill-green">Prontos para operação</span></h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:30px"><input type="checkbox" id="selectAllLight" onchange="toggleSelectAllLight()"></th><th>OS</th><th>Destinatário</th><th>Cidade/UF</th><th>Peso</th><th>Volume Corrigido</th><th>Maior item</th></tr></thead>
+            <tbody id="lightRodoviariosTable"></tbody>
+          </table>
+        </div>
+        <div class="row" style="margin-top:12px;">
+          <button class="btn btn-green" onclick="enviarLevesParaOperacao()">📦 Enviar selecionados para operação</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Pedidos Rodoviários Pesados (> 1000kg)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>OS</th><th>Destinatário</th><th>Cidade/UF</th><th>Peso</th><th>Volume Corrigido</th><th>Maior item</th></tr></thead>
+            <tbody id="heavyRodoviariosTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Pedidos Exclusivos <span class="pill pill-purple">Seguem para consolidação</span></h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>OS</th><th>Destinatário</th><th>Cidade/UF</th><th>Peso</th><th>Volume Corrigido</th><th>Maior item</th></tr></thead>
+            <tbody id="exclusivosTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="planejamento" class="tab">
+      <div class="card">
+        <h2>Executar Planejamento</h2>
+        <div class="row">
+          <button class="btn btn-green" onclick="executarPlanejamento()">Calcular rotas</button>
+          <button class="btn btn-orange" onclick="replanejarRotas()">Replanejar (IA)</button>
+          <button class="btn btn-blue" onclick="exportarRelatorioCSV()">Exportar</button>
+        </div>
+        <div id="statusPlanejamento" class="status"></div>
+      </div>
+    </section>
+
+    <section id="resultado" class="tab">
+      <div class="metrics">
+        <div class="metric"><div class="label">Pedidos</div><div class="value" id="mPedidos">0</div></div>
+        <div class="metric"><div class="label">Alocados</div><div class="value" id="mAlocados">0</div></div>
+        <div class="metric"><div class="label">Não Alocados</div><div class="value" id="mNaoAlocados">0</div></div>
+        <div class="metric"><div class="label">Aguardando (Hold)</div><div class="value" id="mHold">0</div></div>
+        <div class="metric"><div class="label">Aguardando Definição</div><div class="value" id="mAguardandoDefinicao">0</div></div>
+        <div class="metric"><div class="label">Rotas</div><div class="value" id="mRotas">0</div></div>
+      </div>
+      <div class="card"><h2>Mapa</h2><div id="map">Carregando mapa...</div>
+        <div class="map-side-grid"><div class="route-editor"><h4>Rotas</h4><div id="routeEditorList"></div></div><div class="route-editor"><h4 style="margin-top:0;">Aguardando Definição</h4><div id="aguardandoDefinicaoList"></div><h4 style="margin-top:12px;">Não Alocados</h4><div id="unallocatedEditorList"></div><h4 style="margin-top:12px;">Aguardando (Hold)</h4><div id="holdList"></div><h4 style="margin-top:12px;">Operação Leve</h4><div id="operacaoLeveList"></div></div></div>
+      </div>
+      <div class="card"><h2>Resumo</h2><div id="resumoOperacional"></div></div>
+    </section>
+  </main>
+</div>
+
+<div id="routeModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('routeModal').style.display='none'">&times;</span>
+    <div id="modalContent"></div>
   </div>
+</div>
 
 <script>
-/* =========================
-   CONFIG
-========================= */
-const CFG = {
-  CNPJ_MUNDIAL: "05.075.152/0001-77",
-  ENDERECO_BASE: "ESTRADA VELHA GUARULHOS SÃO MIGUEL, 1971",
-  CEP_ACEITO: "07210-250",
-  BAIRROS_ACEITOS: ["JARDIM ARAPONGAS", "JARDIM CUMBICA"],
-
-  CFOP_SP: ["5949","5923"],
-  CFOP_FORA_SP: ["6949","6923"],
-
-  CST_CSOSN_PERMITIDOS: ["040","041","090"],
-
-  REMESSA_PREFIXOS_OK: ["REM", "OUTRAS", "SIMPLES"],
-  VENDA_PREFIXOS_OK: ["VENDA", "REVENDA"],
-
-  TOLERANCIA_VALOR: 0.02,
-  ALIQ_PADRAO: 18,
-  ALIQ_9403: 12
-};
-
-/* =========================
-   MOTOR NCM INTELIGENTE
-========================= */
-const NCM_ENGINE = {
-  allowedPrefixes: [
-    "9403", "4911", "4823", "4819", "3926", "3924",
-    "7326", "7616", "4415", "4420"
-  ],
-  keywordRules: [
-    { keywords:["DISPLAY","EXPOSITOR","BALCAO","MOSTRUARIO"], expected:["9403"] },
-    { keywords:["CARTAZ","FOLDER","LAMINA","IMPRESSO","PANFLETO"], expected:["4911","4823"] },
-    { keywords:["CAIXA","EMBALAGEM","PAPELAO"], expected:["4819","4823"] },
-    { keywords:["COPO","BRINDE","PVC","ACRILICO","PLASTICO"], expected:["3926","3924"] },
-    { keywords:["SUPORTE","ESTRUTURA","METAL","FERRO","ACO"], expected:["7326","7616"] },
-    { keywords:["PALLET","PALETE","MADEIRA"], expected:["4415","4420"] }
+// ==================== CONFIGURAÇÃO GLOBAL ====================
+const REGRAS = {
+  distancia: {
+    maxKmDireto: 80,
+    maxKmAnalise: 120
+  },
+  tempo: {
+    maxHorasDireto: 1.5,
+    maxHorasAnalise: 2.5
+  },
+  cubagem: [
+    { tipo: "FIORINO", max: 3 },
+    { tipo: "VAN", max: 7 },
+    { tipo: "VUC", max: 19 },
+    { tipo: "TOCO", max: 30 },
+    { tipo: "TRUCK", max: 45 },
+    { tipo: "CARRETA", max: 90 }
   ]
 };
 
-/* =========================
-   STATE
-========================= */
-let state = {
-  remessaDoc: null,
-  vendaDoc: null,
-  remessa: null,
-  venda: null,
-  depositantesSet: new Set(),
-  lastRules: [],
-  history: loadHistory(),
+// ==================== FUNÇÕES AUXILIARES ====================
+function setTextSafe(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
 
-  loteDocs: [],
-  loteRemessas: [],
-  loteVendas: [],
-  loteResultados: []
+function normalizarTexto(t) { return (t||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim(); }
+function formatNumber(v) { return v || v===0 ? Number(v).toLocaleString("pt-BR",{minimumFractionDigits:0,maximumFractionDigits:2}) : "-"; }
+function formatCurrency(v) { return Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
+function parseNumero(v) { if(v===null||v===undefined||v==="") return 0; let s=v.toString().trim(); let cleaned=s.includes(",")?s.replace(/\./g,"").replace(",", "."):s; return parseFloat(cleaned)||0; }
+function showTab(tabId,btn=null){ 
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); 
+  document.getElementById(tabId).classList.add("active"); 
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active")); 
+  if(btn) btn.classList.add("active");
+  if (tabId === "resultado") atualizarMetricas();
+}
+function setStatus(msg,type=""){ let el=document.getElementById("statusPlanejamento"); if(el){ el.className=`status ${type}`; el.innerHTML=msg; } }
+function setStatusBanco(msg,type=""){ let el=document.getElementById("statusBanco"); if(el){ el.className=`status ${type}`; el.innerHTML=msg; } }
+
+// ==================== CORREDORES E REGIÕES ====================
+const REGIOES_SP = {
+  "VALE_DO_PARAIBA": { nome: "Vale do Paraíba", cidades: ["SAO JOSE DOS CAMPOS","TAUBATE","JACAREI"], integracaoCorredor: "VALE_DO_PARAIBA" },
+  "CAMPINAS": { nome: "Região Campinas", cidades: ["CAMPINAS","JUNDIAI","SUMARE"], integracaoCorredor: "MINAS_GERAIS" },
+  "SOROCABA": { nome: "Região Sorocaba", cidades: ["SOROCABA","ITU","BOITUVA"], integracaoCorredor: "SUL" },
+  "NORTE_SP": { nome: "Norte SP", cidades: ["RIBEIRAO PRETO","FRANCA"], integracaoCorredor: "CENTRO_OESTE" },
+  "LITORAL": { nome: "Litoral", cidades: ["SANTOS","GUARUJA","SAO VICENTE","PRAIA GRANDE"], integracaoCorredor: null }
 };
+let CORREDORES = {};
 
-/* =========================
-   HELPERS
-========================= */
-function onlyDigits(s){ return (s||"").toString().replace(/\D+/g,""); }
-
-function normalizeText(s){
-  if(!s) return "";
-  return s.toString()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-    .replace(/[^\w\s]/g," ")
-    .replace(/\s+/g," ")
-    .trim()
-    .toUpperCase();
-}
-
-function startsWithAny(text, arr){
-  const t = normalizeText(text);
-  return arr.some(p => t.startsWith(normalizeText(p)));
-}
-
-function getFirstText(doc, selectors){
-  for(const sel of selectors){
-    const el = doc.querySelector(sel);
-    if(el && el.textContent != null) return el.textContent.trim();
+function identificarCorredor(uf,cidade) {
+  let u = normalizarTexto(uf).toUpperCase();
+  let c = normalizarTexto(cidade).toUpperCase();
+  for (let [k, corredor] of Object.entries(CORREDORES)) {
+    if (corredor.cidades.includes(c)) return k;
   }
-  return "";
+  const MAPA_UF = {
+    SP:"CAMPINAS", RJ:"VALE_DO_PARAIBA", MG:"MINAS_GERAIS", ES:"VALE_DO_PARAIBA",
+    PR:"SUL", SC:"SUL", RS:"SUL", GO:"CENTRO_OESTE", DF:"CENTRO_OESTE", MT:"CENTRO_OESTE", MS:"CENTRO_OESTE",
+    BA:"NORDESTE", SE:"NORDESTE", AL:"NORDESTE", PE:"NORDESTE", CE:"NORDESTE", PB:"NORDESTE", RN:"NORDESTE", PI:"NORDESTE", MA:"NORDESTE"
+  };
+  return MAPA_UF[u] || "OUTROS";
 }
 
-function parseXml(xmlText){
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xmlText, "application/xml");
-  const err = doc.querySelector("parsererror");
-  if(err) throw new Error("XML inválido ou malformado.");
-  return doc;
-}
-
-function safeNum(v){
-  const n = Number(String(v||"").replace(",","."));
-  return Number.isFinite(n) ? n : 0;
-}
-
-function fmtMoneyBR(n){
-  const v = (Number(n)||0).toFixed(2).replace(".",",");
-  return "R$ " + v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-
-function rule(status, name, detail){
-  return { status, name, detail };
-}
-
-function pillClass(status){
-  if(status === "OK") return "ok";
-  if(status === "WARN") return "warn";
-  return "erro";
-}
-
-function escapeHtml(s){
-  return (s||"").toString()
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function formatCnpjOrDash(doc){
-  const d = onlyDigits(doc);
-  if(d.length === 14){
-    return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,"$1.$2.$3/$4-$5");
-  }
-  return d || "—";
-}
-
-function getNcmPrefix(ncm){
-  return String(ncm || "").replace(/\D/g, "").substring(0,4);
-}
-
-function detectarRegraDescricao(desc){
-  const d = normalizeText(desc);
-  return NCM_ENGINE.keywordRules.find(r =>
-    r.keywords.some(k => d.includes(k))
-  );
-}
-
-/* =========================
-   EXTRACT XML
-========================= */
-function extractNFe(doc){
-  const nfe = doc.querySelector("NFe") || doc;
-
-  const chave = getFirstText(doc, ["chNFe","protNFe > infProt > chNFe"]);
-  const nNF = getFirstText(nfe, ["ide > nNF"]);
-  const natOp = getFirstText(nfe, ["ide > natOp"]);
-
-  const emitCnpj = getFirstText(nfe, ["emit > CNPJ","emit > CPF"]);
-  const emitUF = getFirstText(nfe, ["emit > enderEmit > UF"]);
-  const emitNome = getFirstText(nfe, ["emit > xNome"]);
-
-  const destCnpj = getFirstText(nfe, ["dest > CNPJ"]);
-  const destCpf = getFirstText(nfe, ["dest > CPF"]);
-  const destDoc = destCnpj || destCpf;
-  const destNome = getFirstText(nfe, ["dest > xNome"]);
-
-  const enderDest = nfe.querySelector("dest > enderDest");
-  const cep = enderDest ? getFirstText(enderDest, ["CEP"]) : "";
-  const bairro = enderDest ? getFirstText(enderDest, ["xBairro"]) : "";
-
-  const dets = Array.from(nfe.querySelectorAll("det"));
-  const itens = dets.map(det => {
-    const prod = det.querySelector("prod");
-    const imposto = det.querySelector("imposto");
-
-    const cProd = prod ? getFirstText(prod, ["cProd"]) : "";
-    const xProd = prod ? getFirstText(prod, ["xProd"]) : "";
-    const cfop = prod ? getFirstText(prod, ["CFOP"]) : "";
-    const ncm = prod ? getFirstText(prod, ["NCM"]) : "";
-    const qCom = prod ? getFirstText(prod, ["qCom"]) : "";
-    const vProd = prod ? getFirstText(prod, ["vProd"]) : "";
-
-    let cst = "";
-    let csosn = "";
-    let pIcms = "";
-
-    if(imposto){
-      const icms = imposto.querySelector("ICMS");
-      if(icms){
-        const cstEl = icms.querySelector("CST");
-        const csosnEl = icms.querySelector("CSOSN");
-        const pIcmsEl = icms.querySelector("pICMS");
-        cst = cstEl ? cstEl.textContent.trim() : "";
-        csosn = csosnEl ? csosnEl.textContent.trim() : "";
-        pIcms = pIcmsEl ? pIcmsEl.textContent.trim() : "";
-      }
-    }
-
-    return {
-      cProd, xProd,
-      CFOP: onlyDigits(cfop).slice(-4),
-      NCM: onlyDigits(ncm),
-      qCom: safeNum(qCom),
-      vProd: safeNum(vProd),
-      CST: cst,
-      CSOSN: csosn,
-      pICMS: safeNum(pIcms)
-    };
-  });
-
-  const vProdTotXml = getFirstText(nfe, ["total > ICMSTot > vProd", "ICMSTot > vProd"]);
-  const vProdTotal = vProdTotXml ? safeNum(vProdTotXml) : itens.reduce((a,b)=>a+b.vProd,0);
-  const qTotal = itens.reduce((a,b)=>a+b.qCom,0);
-
-  const infAdFisco = getFirstText(nfe, ["infAdic > infAdFisco"]);
-  const infCpl = getFirstText(nfe, ["infAdic > infCpl"]);
-  const textoAdic = (infAdFisco + " " + infCpl).trim();
-
-  return {
-    chave, nNF, natOp,
-    emitCnpj, emitUF, emitNome,
-    destDoc, destNome,
-    cep, bairro,
-    itens, vProdTotal, qTotal,
-    textoAdic
+function carregarCorredoresDaUI() {
+  const parse = (id) => (document.getElementById(id)?.value || "").split(",").map(v=>normalizarTexto(v).toUpperCase()).filter(Boolean);
+  CORREDORES = {
+    "VALE_DO_PARAIBA": { nome:"Vale do Paraíba", rodovia:"BR-116", ufs:["RJ"], cidades:parse("corridor_paraiba") },
+    "CAMPINAS": { nome:"Campinas", rodovia:"SP-330", ufs:["SP"], cidades:parse("corridor_campinas") },
+    "SUL": { nome:"Sul", rodovia:"BR-116", ufs:["PR","SC","RS"], cidades:parse("corridor_sul") },
+    "MINAS_GERAIS": { nome:"Minas Gerais", rodovia:"BR-381", ufs:["MG"], cidades:parse("corridor_mg") },
+    "CENTRO_OESTE": { nome:"Centro-Oeste", rodovia:"BR-040", ufs:["GO","DF","MT"], cidades:parse("corridor_co") },
+    "NORDESTE": { nome:"Nordeste", rodovia:"BR-116", ufs:["BA","PE","CE"], cidades:parse("corridor_ne") }
   };
 }
+function isCapitalOuGrandeSP(cep) { let cepNum=(cep||"").replace(/\D/g,""); if(!cepNum || cepNum.length<5) return false; let p=parseInt(cepNum.substring(0,5),10); return p>=1000 && p<=9999; }
+function definirRegiaoSP(cidade) { let c=normalizarTexto(cidade).toUpperCase(); for(let [k,r] of Object.entries(REGIOES_SP)) if(r.cidades.includes(c)) return k; return null; }
+function getCorredorInfo(k) { return CORREDORES[k]||{nome:"Outros",rodovia:"-",cidades:[]}; }
 
-/* =========================
-   HISTÓRICO
-========================= */
-function loadHistory(){
-  try{
-    return JSON.parse(localStorage.getItem("validadorFiscalHistory") || "[]");
-  }catch(e){
-    return [];
-  }
+// ==================== VEÍCULO POR CUBAGEM ====================
+function definirTipoVeiculoPorVolume(m3) {
+  return REGRAS.cubagem.find(r => m3 <= r.max)?.tipo || "CARRETA";
 }
 
-function saveHistory(){
-  localStorage.setItem("validadorFiscalHistory", JSON.stringify(state.history));
-}
-
-function refreshHistoryUI(){
-  const body = document.getElementById("historyBody");
-  body.innerHTML = "";
-
-  let aprovados = 0, reprovados = 0, alertas = 0;
-
-  state.history.forEach(item => {
-    if(item.status === "APROVADO") aprovados++;
-    if(item.status === "REPROVADO") reprovados++;
-    if(item.hasWarn) alertas++;
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escapeHtml(item.date)}</td>
-      <td>${escapeHtml(item.nfRemessa || "—")}</td>
-      <td>${escapeHtml(item.nfVenda || "—")}</td>
-      <td><span class="pill ${item.status === "APROVADO" ? "ok" : "erro"}">${escapeHtml(item.status)}</span></td>
-      <td>${escapeHtml(item.fornecedor || "—")}</td>
-      <td>${escapeHtml(item.cliente || "—")}</td>
-    `;
-    body.appendChild(tr);
-  });
-
-  document.getElementById("statRegistros").textContent = state.history.length;
-  document.getElementById("statAprovados").textContent = aprovados;
-  document.getElementById("statReprovados").textContent = reprovados;
-  document.getElementById("statAlertas").textContent = alertas;
-}
-
-/* =========================
-   NCM ENGINE
-========================= */
-function validarNcmInteligente(remessa, venda){
-  const findings = [];
-
-  if(!venda) return findings;
-
-  const remMap = new Map();
-  (remessa.itens || []).forEach(it => {
-    const key = (it.cProd || "").trim() || normalizeText(it.xProd);
-    if(key) remMap.set(key, it);
-  });
-
-  (venda.itens || []).forEach(vIt => {
-    const key = (vIt.cProd || "").trim() || normalizeText(vIt.xProd);
-    const rIt = remMap.get(key);
-
-    if(rIt){
-      if((rIt.NCM || "") && (vIt.NCM || "") && rIt.NCM !== vIt.NCM){
-        findings.push(rule("ERRO","NCM Remessa × Venda", `${vIt.cProd || vIt.xProd}: Rem ${rIt.NCM} ≠ Ven ${vIt.NCM}`));
-      } else {
-        findings.push(rule("OK","NCM Remessa × Venda", `${vIt.cProd || vIt.xProd}: ${vIt.NCM || "—"}`));
-      }
-    }
-
-    const prefix = getNcmPrefix(vIt.NCM);
-    if(prefix){
-      if(NCM_ENGINE.allowedPrefixes.includes(prefix)){
-        findings.push(rule("OK","Faixa de NCM permitida", `${vIt.cProd || vIt.xProd}: prefixo ${prefix} permitido`));
-      } else {
-        findings.push(rule("WARN","Faixa de NCM permitida", `${vIt.cProd || vIt.xProd}: prefixo ${prefix} fora da base padrão`));
-      }
-    }
-
-    const regraDesc = detectarRegraDescricao(vIt.xProd);
-    if(regraDesc){
-      if(regraDesc.expected.includes(prefix)){
-        findings.push(rule("OK","Descrição × NCM", `${vIt.cProd || vIt.xProd}: descrição compatível com ${prefix}`));
-      } else {
-        findings.push(rule("WARN","Descrição × NCM", `${vIt.cProd || vIt.xProd}: descrição sugere ${regraDesc.expected.join("/")} e veio ${prefix || "—"}`));
-      }
-    }
-
-    const esperada = prefix === "9403" ? CFG.ALIQ_9403 : CFG.ALIQ_PADRAO;
-    if(Number(vIt.pICMS || 0) > 0){
-      if(Math.abs(Number(vIt.pICMS) - esperada) < 0.01){
-        findings.push(rule("OK","Alíquota × NCM", `${vIt.cProd || vIt.xProd}: ${vIt.pICMS}% compatível com ${prefix || "NCM?"}`));
-      } else {
-        findings.push(rule("ERRO","Alíquota × NCM", `${vIt.cProd || vIt.xProd}: veio ${vIt.pICMS}% e o esperado é ${esperada}%`));
-      }
-    } else {
-      findings.push(rule("WARN","Alíquota × NCM", `${vIt.cProd || vIt.xProd}: sem pICMS no XML`));
-    }
-  });
-
-  return findings;
-}
-
-/* =========================
-   VALIDAR TUDO
-========================= */
-function validarTudo(){
-  const rules = [];
-
-  if(!state.remessa){
-    rules.push(rule("ERRO","Importação XMLs","Importe XML Remessa."));
-    return rules;
-  }
-
-  if(!state.venda){
-    rules.push(rule("WARN","Nota de venda não importada","Sem XML Venda — algumas validações ficarão pendentes."));
-  }
-
-  document.getElementById("infoChave").textContent = "Chave Remessa: " + (state.remessa.chave || "—");
-  document.getElementById("infoNF").textContent = "NF Remessa: " + (state.remessa.nNF || "—") + " • NF Venda: " + (state.venda?.nNF || "—");
-  document.getElementById("depositanteVenda").value = state.venda ? formatCnpjOrDash(state.venda.destDoc) : "—";
-
-  const remDest = onlyDigits(state.remessa.destDoc);
-  const cnpjM = onlyDigits(CFG.CNPJ_MUNDIAL);
-  if(remDest === cnpjM){
-    rules.push(rule("OK","CNPJ Destinatário","Remessa para Mundial."));
-  }else{
-    rules.push(rule("ERRO","CNPJ Destinatário",`Encontrado ${formatCnpjOrDash(remDest)} | Esperado ${CFG.CNPJ_MUNDIAL}`));
-  }
-
-  const cep = onlyDigits(state.remessa.cep);
-  const bairro = normalizeText(state.remessa.bairro);
-  const bairroOk = CFG.BAIRROS_ACEITOS.some(b => bairro === normalizeText(b) || bairro.includes(normalizeText(b)));
-  if(cep === onlyDigits(CFG.CEP_ACEITO) && bairroOk){
-    rules.push(rule("OK","Endereço Mundial","CEP + Bairro corretos."));
-  }else{
-    rules.push(rule("ERRO","Endereço Mundial",`CEP ${cep || "—"} | Bairro ${bairro || "—"}`));
-  }
-
-  if(startsWithAny(state.remessa.natOp, CFG.REMESSA_PREFIXOS_OK)){
-    rules.push(rule("OK","Natureza Remessa", normalizeText(state.remessa.natOp)));
-  }else{
-    rules.push(rule("ERRO","Natureza Remessa", normalizeText(state.remessa.natOp) || "Não encontrada"));
-  }
-
-  const ufEmit = (state.remessa.emitUF || "").trim().toUpperCase();
-  const permitidos = ufEmit === "SP" ? CFG.CFOP_SP : CFG.CFOP_FORA_SP;
-  const cfops = (state.remessa.itens || []).map(it => it.CFOP).filter(Boolean);
-  if(cfops.length && cfops.every(c => permitidos.includes(c))){
-    rules.push(rule("OK","CFOP por UF", `${ufEmit || "—"}: ${permitidos.join(" / ")}`));
-  }else{
-    rules.push(rule("ERRO","CFOP por UF", `CFOP fora do permitido para UF ${ufEmit || "—"}`));
-  }
-
-  const itensRem = state.remessa.itens || [];
-  const cstInvalidos = [];
-  itensRem.forEach(it => {
-    let raw = onlyDigits(it.CSOSN || it.CST || "");
-    if(raw.length === 2) raw = "0" + raw;
-    if(raw.length === 1) raw = "00" + raw;
-    if(raw && !CFG.CST_CSOSN_PERMITIDOS.includes(raw)){
-      cstInvalidos.push(`${it.cProd || it.xProd}:${raw}`);
-    }
-  });
-  if(cstInvalidos.length === 0){
-    rules.push(rule("OK","CST/CSOSN","040 / 041 / 090"));
-  }else{
-    rules.push(rule("ERRO","CST/CSOSN", cstInvalidos.join(" • ")));
-  }
-
-  if(state.venda){
-    if(startsWithAny(state.venda.natOp, CFG.VENDA_PREFIXOS_OK)){
-      rules.push(rule("OK","Natureza Venda", normalizeText(state.venda.natOp)));
-    }else{
-      rules.push(rule("ERRO","Natureza Venda", normalizeText(state.venda.natOp) || "Não encontrada"));
-    }
-
-    const emitR = onlyDigits(state.remessa.emitCnpj);
-    const emitV = onlyDigits(state.venda.emitCnpj);
-    if(emitR && emitV && emitR === emitV){
-      rules.push(rule("OK","Emitente Remessa = Venda","Mesmo CNPJ."));
-    }else{
-      rules.push(rule("ERRO","Emitente Remessa = Venda", `${formatCnpjOrDash(emitR)} x ${formatCnpjOrDash(emitV)}`));
-    }
-
-    if(Math.abs((state.remessa.qTotal || 0) - (state.venda.qTotal || 0)) < 1e-9){
-      rules.push(rule("OK","Quantidade","Totais iguais."));
-    }else{
-      rules.push(rule("ERRO","Quantidade", `${state.remessa.qTotal || 0} x ${state.venda.qTotal || 0}`));
-    }
-
-    if(Math.abs((state.remessa.vProdTotal || 0) - (state.venda.vProdTotal || 0)) <= CFG.TOLERANCIA_VALOR){
-      rules.push(rule("OK","Valor","Totais iguais."));
-    }else{
-      rules.push(rule("ERRO","Valor", `${fmtMoneyBR(state.remessa.vProdTotal)} x ${fmtMoneyBR(state.venda.vProdTotal)}`));
-    }
-
-    const destVenda = onlyDigits(state.venda.destDoc);
-    if(state.depositantesSet.size === 0){
-      rules.push(rule("WARN","Depositante","Lista não carregada."));
-    }else if(state.depositantesSet.has(destVenda)){
-      rules.push(rule("OK","Depositante","Encontrado."));
-    }else{
-      rules.push(rule("ERRO","Depositante","Não encontrado na base."));
-    }
-
-    rules.push(...validarNcmInteligente(state.remessa, state.venda));
-  }
-
-  document.getElementById("natOps").value =
-    `Remessa: ${normalizeText(state.remessa.natOp)||"—"} | Venda: ${state.venda ? (normalizeText(state.venda.natOp)||"—") : "—"}`;
-
-  return rules;
-}
-
-/* =========================
-   RENDER
-========================= */
-function renderRules(rules){
-  const body = document.getElementById("rulesBody");
-  body.innerHTML = "";
-  rules.forEach(r => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><b>${escapeHtml(r.name)}</b></td>
-      <td><span class="pill ${pillClass(r.status)}">${escapeHtml(r.status)}</span></td>
-      <td>${escapeHtml(r.detail)}</td>
-    `;
-    body.appendChild(tr);
-  });
-}
-
-function buildMensagemFornecedor(rules){
-  const erros = rules.filter(r => r.status === "ERRO");
-  const warns = rules.filter(r => r.status === "WARN");
-
-  if(erros.length === 0){
-    let txt = "✅ Documentos aprovados.\n\nAgendamento confirmado.\n";
-    if(warns.length){
-      txt += "\n⚠️ Observações:\n" + warns.map(w => `• ${w.name} — ${w.detail}`).join("\n");
-    }
-    return txt;
-  }
-
-  let txt = "❌ Reprovado\n\nAjuste os pontos abaixo:\n\n";
-  txt += erros.map(e => `• ${e.name} — ${e.detail}`).join("\n");
-  if(warns.length){
-    txt += "\n\n⚠️ Observações:\n" + warns.map(w => `• ${w.name} — ${w.detail}`).join("\n");
-  }
-  return txt;
-}
-
-function setResultado(rules){
-  const aprovado = rules.length > 0 && !rules.some(r => r.status === "ERRO");
-  const badge = document.getElementById("resultadoBig");
-  const input = document.getElementById("statusGeral");
-
-  if(aprovado){
-    badge.classList.add("ok");
-    badge.textContent = "✅ APROVADO";
-    input.value = "Aprovado";
-  }else{
-    badge.classList.remove("ok");
-    badge.textContent = "❌ REPROVADO";
-    input.value = "Reprovado";
-  }
-}
-
-/* =========================
-   EXPORT
-========================= */
-function exportCsv(){
-  if(!state.lastRules.length){
-    alert("Valide antes de exportar.");
-    return;
-  }
-  const rows = [["Regra","Status","Detalhe"], ...state.lastRules.map(r => [r.name, r.status, r.detail])];
-  const csv = rows.map(r => r.map(x => `"${String(x||"").replace(/"/g,'""')}"`).join(";")).join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "relatorio_validacao.csv";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-/* =========================
-   SAVE HISTORICO
-========================= */
-function salvarHistorico(){
-  if(!state.lastRules.length){
-    alert("Valide antes de salvar no histórico.");
-    return;
-  }
-
-  const status = state.lastRules.some(r => r.status === "ERRO") ? "REPROVADO" : "APROVADO";
-  const hasWarn = state.lastRules.some(r => r.status === "WARN");
-
-  state.history.unshift({
-    date: new Date().toLocaleString("pt-BR"),
-    nfRemessa: state.remessa?.nNF || "",
-    nfVenda: state.venda?.nNF || "",
-    status,
-    hasWarn,
-    fornecedor: state.remessa?.emitNome || "",
-    cliente: state.venda?.destNome || state.remessa?.destNome || ""
-  });
-
-  saveHistory();
-  refreshHistoryUI();
-  alert("Validação salva no histórico.");
-}
-
-/* =========================
-   LISTA PRODUTOS + NCM
-========================= */
-function montarListaItensNCM(){
-  const campo = document.getElementById("listaProdutosNCM");
-  if(!campo) return;
-
-  let itens = [];
-
-  if(state.venda && state.venda.itens){
-    itens = state.venda.itens;
-  } else if(state.remessa && state.remessa.itens){
-    itens = state.remessa.itens;
-  }
-
-  if(!itens.length){
-    campo.value = "Nenhum item encontrado no XML.";
-    return;
-  }
-
-  let texto = "Produto | Descrição | NCM\n";
-  texto += "------------------------------------------\n";
-
-  itens.forEach(it => {
-    const cod = it.cProd || "-";
-    const desc = it.xProd || "-";
-    const ncm = it.NCM || "-";
-
-    texto += `${cod} | ${desc} | ${ncm}\n`;
-  });
-
-  campo.value = texto;
-}
-
-/* =========================
-   UI
-========================= */
-function setFixedFields(){
-  document.getElementById("cnpjMundial").value = CFG.CNPJ_MUNDIAL;
-  document.getElementById("enderecoBase").value = CFG.ENDERECO_BASE;
-  document.getElementById("cepAceito").value = CFG.CEP_ACEITO;
-  document.getElementById("bairrosAceitos").value = CFG.BAIRROS_ACEITOS.join(" / ");
-  document.getElementById("cfgAllowedPrefixes").value = NCM_ENGINE.allowedPrefixes.join(", ");
-  document.getElementById("cfgKeywordRules").value =
-    NCM_ENGINE.keywordRules.map(r => `${r.keywords.join(" / ")} => ${r.expected.join(" / ")}`).join("\n");
-}
-
-function limparTudo(){
-  state.remessaDoc = null;
-  state.vendaDoc = null;
-  state.remessa = null;
-  state.venda = null;
-  state.lastRules = [];
-
-  document.getElementById("badgeRemessa").textContent = "não carregado";
-  document.getElementById("badgeVenda").textContent = "não carregado";
-  document.getElementById("nameRemessa").textContent = "—";
-  document.getElementById("nameVenda").textContent = "—";
-  document.getElementById("msgFornecedor").value = "";
-  document.getElementById("listaProdutosNCM").value = "";
-  document.getElementById("statusGeral").value = "Aguardando validação";
-  document.getElementById("depositanteVenda").value = "—";
-  document.getElementById("natOps").value = "—";
-  document.getElementById("infoChave").textContent = "Chave Remessa: —";
-  document.getElementById("infoNF").textContent = "NF Remessa: — • NF Venda: —";
-  renderRules([]);
-  setResultado([]);
-}
-
-/* =========================
-   TABS
-========================= */
-function initTabs(){
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(btn.dataset.tab).classList.add("active");
-    });
-  });
-}
-
-/* =========================
-   VALIDAÇÃO EM LOTE
-========================= */
-function classificarTipoDocumento(nfeObj){
-  const nat = normalizeText(nfeObj.natOp || "");
-
-  if(startsWithAny(nat, CFG.REMESSA_PREFIXOS_OK)) return "REMESSA";
-  if(startsWithAny(nat, CFG.VENDA_PREFIXOS_OK)) return "VENDA";
-
+function tipoDoVeiculo(nome) {
+  const n = normalizarTexto(nome).toLowerCase();
+  if (n.includes("fiorino")) return "FIORINO";
+  if (n.includes("van")) return "VAN";
+  if (n.includes("vuc")) return "VUC";
+  if (n.includes("toco")) return "TOCO";
+  if (n.includes("truck")) return "TRUCK";
+  if (n.includes("carreta")) return "CARRETA";
   return "OUTRO";
 }
 
-function atualizarResumoLote(){
-  document.getElementById("infoLoteArquivos").textContent = "Arquivos carregados: " + state.loteDocs.length;
-  document.getElementById("infoLoteRemessas").textContent = "Remessas identificadas: " + state.loteRemessas.length;
-  document.getElementById("infoLoteVendas").textContent = "Vendas identificadas: " + state.loteVendas.length;
-  document.getElementById("infoLotePares").textContent = "Pares encontrados: " + state.loteResultados.length;
-}
+function escolherVeiculoParaCarga(pedidosDaCarga) {
+  if (!pedidosDaCarga.length) return null;
 
-function limparTabelaLote(){
-  const body = document.getElementById("loteBody");
-  if(body) body.innerHTML = "";
-}
+  const pesoTotal = pedidosDaCarga.reduce((s,p)=>s+p.pesoTotal,0);
+  const volumeTotal = pedidosDaCarga.reduce((s,p)=>s+p.volumeTotal,0);
+  const notasTotal = pedidosDaCarga.reduce((s,p)=>s+p.numNotas,0);
+  const maiorItem = getMaiorItemDaCarga(pedidosDaCarga);
 
-function renderLoteResultados(){
-  const body = document.getElementById("loteBody");
-  body.innerHTML = "";
+  let tipoIdeal = definirTipoVeiculoPorVolume(volumeTotal);
+  let candidatos = vehicles.filter(v => tipoDoVeiculo(v.nome) === tipoIdeal);
+  if (!candidatos.length) candidatos = vehicles;
 
-  state.loteResultados.forEach(item => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escapeHtml(item.nfRemessa || "—")}</td>
-      <td>${escapeHtml(item.nfVenda || "—")}</td>
-      <td><span class="pill ${item.status === "OK" ? "ok" : item.status === "WARN" ? "warn" : "erro"}">${escapeHtml(item.status)}</span></td>
-      <td>${escapeHtml(item.fornecedor || "—")}</td>
-      <td>${escapeHtml(item.resumo || "—")}</td>
-    `;
-    body.appendChild(tr);
-  });
-
-  atualizarResumoLote();
-}
-
-function gerarChavePareamento(nfeObj){
-  const emit = onlyDigits(nfeObj.emitCnpj || "");
-  const qtd = Number(nfeObj.qTotal || 0).toFixed(4);
-  const val = Number(nfeObj.vProdTotal || 0).toFixed(2);
-  return `${emit}|${qtd}|${val}`;
-}
-
-function parearLote(){
-  const vendasMap = new Map();
-
-  state.loteVendas.forEach(v => {
-    const chave = gerarChavePareamento(v);
-    if(!vendasMap.has(chave)) vendasMap.set(chave, []);
-    vendasMap.get(chave).push(v);
-  });
-
-  state.loteResultados = [];
-
-  state.loteRemessas.forEach(r => {
-    const chave = gerarChavePareamento(r);
-    const candidatas = vendasMap.get(chave) || [];
-    const vendaPareada = candidatas.length ? candidatas.shift() : null;
-
-    const backupRemessa = state.remessa;
-    const backupVenda = state.venda;
-
-    state.remessa = r;
-    state.venda = vendaPareada;
-
-    const regras = validarTudo();
-    const erros = regras.filter(x => x.status === "ERRO");
-    const warns = regras.filter(x => x.status === "WARN");
-
-    let status = "OK";
-    if(erros.length) status = "ERRO";
-    else if(warns.length) status = "WARN";
-
-    let resumo = "Aprovado";
-    if(erros.length){
-      resumo = erros.slice(0,3).map(e => e.name).join(" | ");
-    } else if(warns.length){
-      resumo = warns.slice(0,3).map(w => w.name).join(" | ");
-    }
-
-    state.loteResultados.push({
-      nfRemessa: r.nNF || "",
-      nfVenda: vendaPareada?.nNF || "",
-      status,
-      fornecedor: r.emitNome || "",
-      resumo
-    });
-
-    state.remessa = backupRemessa;
-    state.venda = backupVenda;
-  });
-
-  renderLoteResultados();
-}
-
-async function importarLoteArquivos(files){
-  state.loteDocs = [];
-  state.loteRemessas = [];
-  state.loteVendas = [];
-  state.loteResultados = [];
-  limparTabelaLote();
-
-  for(const f of files){
-    try{
-      const text = await f.text();
-      const doc = parseXml(text);
-      const obj = extractNFe(doc);
-      const tipo = classificarTipoDocumento(obj);
-
-      state.loteDocs.push({
-        nome: f.name,
-        tipo,
-        doc,
-        obj
-      });
-
-      if(tipo === "REMESSA") state.loteRemessas.push(obj);
-      if(tipo === "VENDA") state.loteVendas.push(obj);
-    }catch(err){
-      console.error("Erro ao ler arquivo do lote:", f.name, err);
+  for (let v of candidatos) {
+    if (!cabeNoVeiculoPorDimensao(maiorItem, v)) continue;
+    if (pesoTotal <= v.pesoMax && volumeTotal <= v.volumeMax && notasTotal <= v.notasMax) {
+      return v;
     }
   }
 
-  atualizarResumoLote();
+  // fallback (quebra regra)
+  const ordenados = [...vehicles].sort((a,b)=> a.volumeMax - b.volumeMax);
+  for (let v of ordenados) {
+    if (!cabeNoVeiculoPorDimensao(maiorItem, v)) continue;
+    if (pesoTotal <= v.pesoMax && volumeTotal <= v.volumeMax && notasTotal <= v.notasMax) {
+      return v;
+    }
+  }
+  return null;
 }
 
-function exportCsvLote(){
-  if(!state.loteResultados.length){
-    alert("Valide o lote antes de exportar.");
+// ==================== ANÁLISE DISTÂNCIA + TEMPO ====================
+function estimarTempoHoras(distKm, tipoVeiculo) {
+  let velocidade = 60;
+  if (tipoVeiculo === "FIORINO") velocidade = 50;
+  if (tipoVeiculo === "VAN") velocidade = 55;
+  if (tipoVeiculo === "VUC") velocidade = 60;
+  if (tipoVeiculo === "TRUCK") velocidade = 65;
+  return distKm / velocidade;
+}
+
+function decisaoDistanciaTempo(distKm, tipoVeiculo) {
+  const tempo = estimarTempoHoras(distKm, tipoVeiculo);
+  if (tempo <= REGRAS.tempo.maxHorasDireto)
+    return { ok: true, alerta: null };
+  if (tempo <= REGRAS.tempo.maxHorasAnalise)
+    return { ok: true, alerta: "⚠️ Distância/tempo no limite" };
+  return { ok: false, alerta: "❌ Distância/tempo alto → nova rota" };
+}
+
+// ==================== DEMAIS FUNÇÕES AUXILIARES (DIMENSÕES, ETC) ====================
+function getMaiorItemDoPedido(pedido){ let maior = null; (pedido.items||[]).forEach(item => { const dimCritica = Math.max(item.altura||0, item.largura||0, item.profundidade||0); if (!maior || dimCritica > maior.dimCritica) maior = { ...item, dimCritica }; }); return maior || { altura:0, largura:0, profundidade:0, dimCritica:0 }; }
+function getMaiorItemDaCarga(pedidosDaCarga) { let maior = null; pedidosDaCarga.forEach(p => { const item = getMaiorItemDoPedido(p); if (!maior || (item.dimCritica||0) > (maior.dimCritica||0)) maior = item; }); return maior || { altura:0, largura:0, profundidade:0, dimCritica:0 }; }
+function cabeNoVeiculoPorDimensao(item, veiculo) { return (item.altura||0) <= (veiculo.alturaMax||0) && (item.largura||0) <= (veiculo.larguraMax||0) && (item.profundidade||0) <= (veiculo.profundidadeMax||0); }
+function calcularCubagemInteligente(pesoKg, volumeInformado) { let volume = parseNumero(volumeInformado); if (volume > 0) return volume; const regraAuto = document.getElementById("regraCubagemAuto")?.checked !== false; if (!regraAuto) return 0; const fator = parseFloat(document.getElementById("fatorCubagem")?.value || 0.003); return Math.max(pesoKg * fator, 0.01); }
+function custoPorKmPadrao(nome) { let n=normalizarTexto(nome).toLowerCase(); if(n.includes("fiorino")) return 1.8; if(n.includes("van")) return 2.2; if(n.includes("vuc")) return 3.2; if(n.includes("truck")) return 4.8; return 2.5; }
+
+// ==================== CADASTRO VEÍCULOS ====================
+let vehicles = [];
+function adicionarVeiculoPadrao() {
+  const defaults = [
+    { nome:"Fiorino / Van Leve", volumeMax:5, pesoMax:800, notasMax:30, alturaMax:1.5, larguraMax:1.6, profundidadeMax:2.5, custoKm:2.2 },
+    { nome:"VUC", volumeMax:14, pesoMax:3000, notasMax:50, alturaMax:2.2, larguraMax:2.2, profundidadeMax:4.5, custoKm:3.4 },
+    { nome:"Truck", volumeMax:30, pesoMax:8000, notasMax:80, alturaMax:2.7, larguraMax:2.4, profundidadeMax:7.5, custoKm:4.8 }
+  ];
+  let added = 0;
+  defaults.forEach(v => { if (!vehicles.some(x => x.nome === v.nome)) { vehicles.push({ id: crypto.randomUUID?.() || Date.now()+"_"+Math.random(), ...v }); added++; } });
+  salvarNoStorageLocal(); renderVehicles(); atualizarMetricas(); setStatusBanco(added ? "Frota padrão adicionada!" : "Frota padrão já existe.", added ? "ok" : "info");
+}
+function addVehicle() {
+  let nome=document.getElementById("v_nome").value.trim(), vol=parseFloat(document.getElementById("v_volume").value||0), peso=parseFloat(document.getElementById("v_peso").value||0), notas=parseInt(document.getElementById("v_notas").value||0,10), alt=parseFloat(document.getElementById("v_altura").value||0), larg=parseFloat(document.getElementById("v_largura").value||0), prof=parseFloat(document.getElementById("v_profundidade").value||0), custo=parseFloat(document.getElementById("v_custo_km").value||0);
+  if(!nome||vol<=0||peso<=0||notas<=0){ alert("Preencha nome, volume, peso e notas"); return; }
+  vehicles.push({id:crypto.randomUUID?.()||Date.now()+"_"+Math.random(),nome,volumeMax:vol,pesoMax:peso,notasMax:notas,alturaMax:alt||1,larguraMax:larg||1,profundidadeMax:prof||1,custoKm:custo>0?custo:custoPorKmPadrao(nome)});
+  ["v_nome","v_volume","v_peso","v_notas","v_altura","v_largura","v_profundidade","v_custo_km"].forEach(id=>document.getElementById(id).value=""); salvarNoStorageLocal(); renderVehicles(); atualizarMetricas();
+}
+function removeVehicle(id){ vehicles=vehicles.filter(v=>String(v.id)!==String(id)); salvarNoStorageLocal(); renderVehicles(); atualizarMetricas(); }
+function renderVehicles(){ let tbody=document.getElementById("vehicleTableBody"); if(!vehicles.length){ tbody.innerHTML='<tr><td colspan="7">Nenhum veículo. Clique em "Adicionar Veículo Leve Padrão"</td></tr>'; return; } tbody.innerHTML=vehicles.map(v=>`<tr><td>${v.nome}</td><td>${formatNumber(v.volumeMax)}</td><td>${formatNumber(v.pesoMax)} kg</td><td>${v.notasMax}</td><td>${formatNumber(v.alturaMax)} x ${formatNumber(v.larguraMax)} x ${formatNumber(v.profundidadeMax)} m</td><td>${formatCurrency(v.custoKm)}</td><td><button class="btn btn-red" onclick="removeVehicle('${String(v.id).replace(/'/g,"\\'")}')">X</button></td></tr>`).join(""); }
+function salvarNoStorageLocal() { localStorage.setItem("veiculos", JSON.stringify(vehicles)); }
+function carregarDoStorageLocal() { try { const saved = JSON.parse(localStorage.getItem("veiculos") || "[]"); if (Array.isArray(saved)) vehicles = saved; } catch (e) { vehicles = []; } }
+
+// ==================== PEDIDOS ====================
+let pedidos = [];
+let operacaoLeve = [];
+
+function valorColuna(row,names){ for(let key of Object.keys(row||{})){ let cleanKey=normalizarTexto(key).toUpperCase().replace(/\./g,"").replace(/\s+/g," "); for(let name of names){ let cleanName=normalizarTexto(name).toUpperCase().replace(/\./g,"").replace(/\s+/g," "); if(cleanKey===cleanName) return row[key]; } } return ""; }
+function analisarObs(obs){ 
+  let t = normalizarTexto(obs).toLowerCase(); 
+  return { 
+    exclusivo: t.includes("exclusivo") || t.includes("carro exclusivo"),
+    paletizado: t.includes("palet") || t.includes("pallet"),
+    agendamento: t.includes("agend") || t.includes("horario") || t.includes("programada") || t.includes("hora marcada")
+  }; 
+}
+
+function agruparPedidosPorOS(linhas){
+  carregarCorredoresDaUI(); let mapa=new Map();
+  linhas.forEach((row,idx)=>{
+    let os=String(valorColuna(row,["OS"])||"").trim(); if(!os) return; let obs=valorColuna(row,["OBS"])||""; let leitura=analisarObs(obs); let peso=parseNumero(valorColuna(row,["PESO BRUTO","PESO"])); let volumeOriginal=parseNumero(valorColuna(row,["METROCUBICO","VOLUME","M3","M³"])); let volumeCorrigido=calcularCubagemInteligente(peso, volumeOriginal); let codigoProduto=valorColuna(row,["CODIGO PRODUTO","COD_PRODUTO","CODIGO"]); let produto=valorColuna(row,["PRODUTO","DESCRICAO"]); let fotoUrl=valorColuna(row,["FOTO_URL","FOTO"]); let alturaItem=parseNumero(valorColuna(row,["ALTURA"])); let larguraItem=parseNumero(valorColuna(row,["LARGURA"])); let profundidadeItem=parseNumero(valorColuna(row,["PROFUNDIDADE","COMPRIMENTO"]));
+    if(!mapa.has(os)){ const cidade = valorColuna(row,["CIDADE"]), uf = valorColuna(row,["UF"]); mapa.set(os,{csvIndex:idx, os, destinatario:valorColuna(row,["DESTINATARIO"]), cep:valorColuna(row,["CEP"]), logradouro:valorColuna(row,["LOGRADOURO"]), numero:valorColuna(row,["NUMERO"]), bairro:valorColuna(row,["BAIRRO"]), cidade, uf, pesoTotal:0, volumeTotal:0, volumeOriginal:0, numNotas:0, dataPrevisao:valorColuna(row,["DATAPREVISAO","DATA PREVISAO"]), modalidade:valorColuna(row,["MODALIDADE"])||"Rodoviario", exclusivo:leitura.exclusivo, paletizado:leitura.paletizado, agendamento:leitura.agendamento, corredorPrincipal:identificarCorredor(uf, cidade), regiaoSP:uf==="SP"?definirRegiaoSP(cidade):null, obs, cubagemAuto: volumeOriginal === 0 || volumeOriginal === null || isNaN(volumeOriginal), items:[]}); }
+    let p=mapa.get(os); p.pesoTotal+=peso; p.volumeTotal+=volumeCorrigido; p.numNotas+=1; p.volumeOriginal += volumeOriginal; p.items.push({codigo: codigoProduto, descricao: produto, fotoUrl: fotoUrl, peso, volume: volumeCorrigido, altura: alturaItem, largura: larguraItem, profundidade: profundidadeItem});
+  });
+  const pedidosAgrupados = Array.from(mapa.values()); pedidosAgrupados.forEach(p => { p.maiorItem = getMaiorItemDoPedido(p); p.maiorAltura = p.maiorItem.altura || 0; p.maiorLargura = p.maiorItem.largura || 0; p.maiorProfundidade = p.maiorItem.profundidade || 0; p.grupoConsolidado = obterChaveAgrupamento(p); }); return pedidosAgrupados;
+}
+
+function obterChaveAgrupamento(p) { const uf = normalizarTexto(p.uf).toUpperCase(), cidade = normalizarTexto(p.cidade).toUpperCase(), cep = (p.cep || "").replace(/\D/g, ""); const cidadesLitoral = ["SANTOS","GUARUJA","SAO VICENTE","PRAIA GRANDE"]; if (uf === "SP" && cidadesLitoral.includes(cidade)) return "LITORAL_SP"; if (uf === "SP" && cep.length >= 5 && isCapitalOuGrandeSP(cep)) return "SP_CAPITAL"; if (uf === "SP") { const regiao = definirRegiaoSP(cidade); if (regiao && REGIOES_SP[regiao]) { const integracao = REGIOES_SP[regiao].integracaoCorredor; return integracao || regiao; } return "SP_INTERIOR"; } const corredor = identificarCorredor(uf, cidade); return corredor || "OUTROS"; }
+
+function podeConsolidar(p1, p2) {
+  if (p1.grupoConsolidado === "LITORAL_SP" || p2.grupoConsolidado === "LITORAL_SP") {
+    return p1.grupoConsolidado === p2.grupoConsolidado;
+  }
+  if (p1.grupoConsolidado === p2.grupoConsolidado) return true;
+  if (document.getElementById("regraCapitalFlex")?.checked &&
+      (p1.grupoConsolidado === "SP_CAPITAL" || p2.grupoConsolidado === "SP_CAPITAL")) {
+    return true;
+  }
+  return identificarCorredor(p1.uf, p1.cidade) === identificarCorredor(p2.uf, p2.cidade);
+}
+
+function gerarFatorDecisorio(pedidosDaCarga, veiculo, grupoChave) {
+  const maiorItem = getMaiorItemDaCarga(pedidosDaCarga);
+  const peso = pedidosDaCarga.reduce((s,p)=>s+p.pesoTotal,0);
+  const m3 = pedidosDaCarga.reduce((s,p)=>s+p.volumeTotal,0);
+  const notas = pedidosDaCarga.reduce((s,p)=>s+p.numNotas,0);
+  let regras = [];
+  if (grupoChave === "LITORAL_SP") regras.push("Litoral isolado");
+  else if (grupoChave === "SP_CAPITAL") regras.push("Capital por CEP");
+  else regras.push("Consolidação por corredor/rodovia");
+  if (pedidosDaCarga.length > 1) regras.push("Consolidação entre pedidos compatíveis");
+  if (pedidosDaCarga.some(p=>p.cubagemAuto)) regras.push("Cubagem automática considerada");
+  const pctPeso = (peso / veiculo.pesoMax) * 100;
+  const pctVolume = (m3 / veiculo.volumeMax) * 100;
+  const pctNotas = (notas / veiculo.notasMax) * 100;
+  let motivoPrincipal = "";
+  if (pctVolume >= pctPeso && pctVolume >= pctNotas) {
+    motivoPrincipal = `cubagem total de ${formatNumber(m3)} m³ (${Math.round(pctVolume)}% da capacidade)`;
+  } else if (pctPeso >= pctVolume && pctPeso >= pctNotas) {
+    motivoPrincipal = `peso total de ${formatNumber(peso)} kg (${Math.round(pctPeso)}% da capacidade)`;
+  } else {
+    motivoPrincipal = `quantidade de ${notas} notas fiscais (${Math.round(pctNotas)}% da capacidade)`;
+  }
+  const motivoDimensao = `Maior item ${formatNumber(maiorItem.altura)} x ${formatNumber(maiorItem.largura)} x ${formatNumber(maiorItem.profundidade)} m → veículo mínimo ${veiculo?.nome||"não encontrado"}`;
+  const textoFinal = `Veículo escolhido devido à ${motivoPrincipal}. ${motivoDimensao}`;
+  return {
+    maiorItem,
+    motivoDimensao: textoFinal,
+    peso,
+    m3,
+    corredor: grupoChave,
+    regrasAplicadas: regras,
+    observacoes: [`Peso total ${formatNumber(peso)} kg (${Math.round(pctPeso)}%)`, `Volume total ${formatNumber(m3)} m³ (${Math.round(pctVolume)}%)`, `${notas} notas (${Math.round(pctNotas)}%)`]
+  };
+}
+
+function renderPedidosSeparados() {
+  const lightTable = document.getElementById("lightRodoviariosTable");
+  const heavyTable = document.getElementById("heavyRodoviariosTable");
+  const exclusivosTable = document.getElementById("exclusivosTable");
+  if (!lightTable || !heavyTable || !exclusivosTable) { console.error("Tabelas não encontradas"); return; }
+  const rodoviarios = pedidos.filter(p => normalizarTexto(p.modalidade).toLowerCase() === "rodoviario");
+  const exclusivos = pedidos.filter(p => p.exclusivo === true);
+  const naoExclusivosRod = rodoviarios.filter(p => !p.exclusivo);
+  const leves = naoExclusivosRod.filter(p => p.pesoTotal <= 1000);
+  const pesados = naoExclusivosRod.filter(p => p.pesoTotal > 1000);
+  lightTable.innerHTML = leves.map(p => `<tr><td><input type="checkbox" class="lightCheckbox" value="${p.os}"></td><td>${p.os}</td><td>${p.destinatario?.substring(0,25)||"-"}</td><td>${p.cidade}/${p.uf}</td><td>${formatNumber(p.pesoTotal)} kg</td><td>${formatNumber(p.volumeTotal)} m³</td><td>${formatNumber(p.maiorItem?.dimCritica||0)} m</td></tr>`).join("");
+  heavyTable.innerHTML = pesados.map(p => `<tr><td>${p.os}</td><td>${p.destinatario?.substring(0,25)||"-"}</td><td>${p.cidade}/${p.uf}</td><td>${formatNumber(p.pesoTotal)} kg</td><td>${formatNumber(p.volumeTotal)} m³</td><td>${formatNumber(p.maiorItem?.dimCritica||0)} m</td></tr>`).join("");
+  exclusivosTable.innerHTML = exclusivos.map(p => `<tr><td>${p.os}</td><td>${p.destinatario?.substring(0,25)||"-"}</td><td>${p.cidade}/${p.uf}</td><td>${formatNumber(p.pesoTotal)} kg</td><td>${formatNumber(p.volumeTotal)} m³</td><td>${formatNumber(p.maiorItem?.dimCritica||0)} m</td></tr>`).join("");
+  setTextSafe("mPedidos", pedidos.length);
+}
+
+function toggleSelectAllLight() {
+  const chk = document.getElementById("selectAllLight");
+  const checkboxes = document.querySelectorAll(".lightCheckbox");
+  checkboxes.forEach(cb => cb.checked = chk.checked);
+}
+function enviarLevesParaOperacao() {
+  const checkboxes = document.querySelectorAll(".lightCheckbox:checked");
+  const osSelecionados = Array.from(checkboxes).map(cb => cb.value);
+  if (osSelecionados.length === 0) { alert("Selecione ao menos um pedido rodoviário leve para enviar à operação."); return; }
+  const novosLeves = pedidos.filter(p => osSelecionados.includes(p.os) && !p.exclusivo && normalizarTexto(p.modalidade).toLowerCase() === "rodoviario" && p.pesoTotal <= 1000);
+  operacaoLeve.push(...novosLeves);
+  pedidos = pedidos.filter(p => !osSelecionados.includes(p.os));
+  renderPedidosSeparados();
+  renderOperacaoLeveList();
+  atualizarMetricas();
+  alert(`${novosLeves.length} pedidos leves enviados para operação.`);
+  document.getElementById("selectAllLight").checked = false;
+}
+function renderOperacaoLeveList() {
+  const div = document.getElementById("operacaoLeveList");
+  if (!div) return;
+  if (operacaoLeve.length === 0) { div.innerHTML = "<div>Nenhum pedido enviado para operação.</div>"; return; }
+  div.innerHTML = operacaoLeve.map(p => `<div class="pedido-chip"><strong>${p.os}</strong> - ${p.destinatario||"-"}<br>📍 ${p.cidade}/${p.uf}<br>⚖ ${formatNumber(p.pesoTotal)} kg | 📦 ${formatNumber(p.volumeTotal)} m³</div>`).join("");
+}
+
+function montarEndereco(p){ return [p.logradouro,p.numero,p.bairro,p.cidade,p.uf,p.cep].filter(Boolean).join(", "); }
+
+// ==================== GEOCÓDIGO E MAPA ====================
+let map = null, geocoder = null;
+let directionsRenderers = [];
+let geocodeCache = {};
+let depotCoords = null;
+
+async function geocodeAddress(addr) { if (!geocoder) throw new Error("Geocodificador não disponível"); if (!addr) throw new Error("Endereço inválido"); const key = addr.trim().toLowerCase(); if (geocodeCache[key]) return geocodeCache[key]; return new Promise((resolve, reject) => { geocoder.geocode({ address: addr }, (results, status) => { if (status === "OK" && results[0]) { const loc = results[0].geometry.location, coords = { lat: loc.lat(), lng: loc.lng() }; geocodeCache[key] = coords; salvarCacheGeo(); resolve(coords); } else reject(new Error(`Falha ao geocodificar: ${addr}`)); }); }); }
+function salvarCacheGeo() { localStorage.setItem("geo_cache", JSON.stringify(geocodeCache)); }
+function loadLocalCaches() { try { geocodeCache = JSON.parse(localStorage.getItem("geo_cache") || "{}"); } catch (e) { geocodeCache = {}; } }
+
+function clearRoutes() { if (directionsRenderers && directionsRenderers.length) directionsRenderers.forEach(item => item.renderer.setMap(null)); directionsRenderers = []; }
+
+function otimizarOrdemRota(pedidos, origemCoords) {
+  if (pedidos.length <= 1) return pedidos;
+  const naoVisitados = [...pedidos];
+  const rotaOtimizada = [];
+  let atual = { lat: origemCoords.lat, lng: origemCoords.lng };
+  while (naoVisitados.length > 0) {
+    let menorDist = Infinity;
+    let idxMenor = -1;
+    for (let i = 0; i < naoVisitados.length; i++) {
+      const dist = calcularDistancia(atual.lat, atual.lng, naoVisitados[i].lat, naoVisitados[i].lng);
+      if (dist < menorDist) {
+        menorDist = dist;
+        idxMenor = i;
+      }
+    }
+    const prox = naoVisitados[idxMenor];
+    rotaOtimizada.push(prox);
+    atual = prox;
+    naoVisitados.splice(idxMenor, 1);
+  }
+  return rotaOtimizada;
+}
+
+function calcularDistancia(lat1,lng1,lat2,lng2){ if([lat1,lng1,lat2,lng2].some(v => v===undefined || v===null)) return 999999; const R = 6371, dLat = (lat2-lat1) * Math.PI/180, dLng = (lng2-lng1) * Math.PI/180; const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2; return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); }
+
+async function desenharRotas(rotas, origem){
+  if(!map || !geocoder) return; clearRoutes(); let origin = await geocodeAddress(origem); depotCoords = origin; let bounds = new google.maps.LatLngBounds(); bounds.extend(origin); let colors = ["#2563eb","#dc2626","#16a34a","#9333ea","#d97706","#0891b2"]; new google.maps.Marker({position:origin,map,title:origem,label:"CD"});
+  for(let idx=0; idx<rotas.length; idx++){
+    let rota=rotas[idx]; if(!rota.pedidos.length) continue; let pontos=[];
+    for(let p of rota.pedidos){ try{ let coord = p.lat && p.lng ? {lat:p.lat,lng:p.lng} : await geocodeAddress(montarEndereco(p)); pontos.push({pedido:p,coord}); bounds.extend(coord); new google.maps.Marker({position:coord,map,title:`${p.os} - ${p.destinatario||""}`,label:String(pontos.length),icon:{path:google.maps.SymbolPath.CIRCLE,scale:8,fillColor:colors[idx%colors.length],fillOpacity:1,strokeColor:"#fff",strokeWeight:1}}); }catch(e){ console.warn("Erro geocode",p.os); } }
+    if(!pontos.length) continue; let service = new google.maps.DirectionsService(); let destination = pontos[pontos.length - 1].coord; let waypoints = pontos.slice(0, -1).map(p => ({ location: p.coord, stopover: true }));
+    await new Promise(resolve => { service.route({ origin, destination, waypoints, travelMode: google.maps.TravelMode.DRIVING, optimizeWaypoints: true }, (res,status)=>{ if(status==="OK"){ let renderer=new google.maps.DirectionsRenderer({map,preserveViewport:true,suppressMarkers:true,polylineOptions:{strokeColor:colors[idx%colors.length],strokeWeight:5}}); renderer.setDirections(res); directionsRenderers.push({ id: rota.id, renderer }); let dist=0; res.routes[0].legs.forEach(l=>{dist+=l.distance?.value||0;}); rota.distanciaKm=dist/1000; rota.custoEstimado=rota.distanciaKm*(rota.veiculo?.custoKm||0); } else console.warn("Directions falhou:", status); resolve(); }); });
+  }
+  if(!bounds.isEmpty()) map.fitBounds(bounds);
+}
+
+function resetAllRouteStyles() {
+  directionsRenderers.forEach(item => {
+    if (item.renderer && item.renderer.setOptions) {
+      item.renderer.setOptions({ polylineOptions: { strokeWeight: 5, strokeColor: "#2563eb" } });
+    }
+  });
+}
+function highlightRouteById(routeId) {
+  const found = directionsRenderers.find(item => item.id === routeId);
+  if (found && found.renderer) {
+    found.renderer.setOptions({ polylineOptions: { strokeWeight: 8, strokeColor: "#ff0000" } });
+  }
+}
+function focusRouteOnMap(rotaId) {
+  const rota = ultimoResultado?.rotas?.find(r => r.id === rotaId);
+  if (!rota || !map || !depotCoords) return;
+  resetAllRouteStyles();
+  highlightRouteById(rotaId);
+  const bounds = new google.maps.LatLngBounds();
+  bounds.extend(depotCoords);
+  for (let p of rota.pedidos) if (p.lat && p.lng) bounds.extend({ lat:p.lat, lng:p.lng });
+  map.fitBounds(bounds);
+}
+
+// ==================== ROTEIRIZAÇÃO INTELIGENTE (COM DISTÂNCIA/TEMPO) ====================
+async function montarRotasInteligentes(pedidosBase) {
+  const rotas = [], naoAlocados = [], holdList = [];
+  const pesoMaxCfg = Number(document.getElementById("cfgPesoMax").value||5000);
+  const volumeMaxCfg = Number(document.getElementById("cfgVolumeMax").value||20);
+  const maxParadas = Number(document.getElementById("cfgMaxParadas").value||12);
+  const raioKm = Number(document.getElementById("cfgRaioKm").value||80);
+  const usarHold = document.getElementById("regraPesado")?.checked !== false;
+
+  const grupos = new Map(); 
+  for (const p of pedidosBase) { 
+    const chave = p.grupoConsolidado || obterChaveAgrupamento(p); 
+    if (!grupos.has(chave)) grupos.set(chave, []); 
+    grupos.get(chave).push(p); 
+  }
+  for (const [chave, pedidosGrupo] of grupos.entries()) {
+    const corredorInfo = getCorredorInfo(chave);
+    const gruposData = new Map(); 
+    for (const p of pedidosGrupo) { 
+      const data = p.dataPrevisao || "Sem data"; 
+      if (!gruposData.has(data)) gruposData.set(data, []); 
+      gruposData.get(data).push(p); 
+    }
+    for (const [data, pedidosData] of gruposData.entries()) {
+      const ordenados = [...pedidosData].sort((a,b) => 
+        calcularDistancia(a.lat,a.lng,depotCoords?.lat,depotCoords?.lng) - 
+        calcularDistancia(b.lat,b.lng,depotCoords?.lat,depotCoords?.lng)
+      ); 
+      let lote = [];
+      const fecharLote = () => {
+        if (!lote.length) return; 
+        const loteOtimizado = otimizarOrdemRota(lote, depotCoords);
+        const veiculo = escolherVeiculoParaCarga(loteOtimizado);
+        const isHeavySolo = usarHold && loteOtimizado.length === 1 && 
+                            loteOtimizado[0].pesoTotal > 1000 && 
+                            !loteOtimizado[0].exclusivo;
+        if (!veiculo) {
+          loteOtimizado.forEach(p => naoAlocados.push({ ...p, motivo: motivoNaoAlocadoCarga(loteOtimizado) }));
+        } else if (isHeavySolo) {
+          loteOtimizado.forEach(p => holdList.push({ ...p, motivo: "Peso > 1000kg sem consolidação → aguardar nova rodada" }));
+        } else {
+          const decisao = gerarFatorDecisorio(loteOtimizado, veiculo, chave);
+          rotas.push({ 
+            id: crypto.randomUUID?.() || Date.now()+"_"+Math.random(), 
+            corredor: chave, 
+            nomeCorredor: corredorInfo.nome || chave, 
+            rodovia: corredorInfo.rodovia || "-", 
+            dataEntrega: data, 
+            pedidos: [...loteOtimizado], 
+            pesoTotal: loteOtimizado.reduce((s,p)=>s+p.pesoTotal,0), 
+            volumeTotal: loteOtimizado.reduce((s,p)=>s+p.volumeTotal,0), 
+            numNotas: loteOtimizado.reduce((s,p)=>s+p.numNotas,0), 
+            veiculo, 
+            distanciaKm: 0, 
+            custoEstimado: 0, 
+            exclusivo: loteOtimizado.some(p => p.exclusivo), 
+            fatorDecisorio: decisao.motivoDimensao, 
+            decisao, 
+            grupoChave: chave, 
+            maiorItem: decisao.maiorItem, 
+            itemCritico: { item: decisao.maiorItem } 
+          });
+        }
+        lote = [];
+      };
+      for (const p of ordenados) {
+        if (!lote.length) { lote.push(p); continue; }
+        // Verifica compatibilidade entre existente e novo pedido
+        let pode = true; 
+        for (const existente of lote) { 
+          if (!podeConsolidar(existente, p)) { pode = false; break; }
+          const dist = calcularDistancia(existente.lat, existente.lng, p.lat, p.lng);
+          const tipoVeiculo = definirTipoVeiculoPorVolume(
+            lote.reduce((s,x)=>s+x.volumeTotal,0) + p.volumeTotal
+          );
+          const analise = decisaoDistanciaTempo(dist, tipoVeiculo);
+          if (!analise.ok) { pode = false; break; }
+        }
+        const teste = [...lote, p];
+        const pesoTeste = teste.reduce((s,x)=>s+x.pesoTotal,0);
+        const volumeTeste = teste.reduce((s,x)=>s+x.volumeTotal,0);
+        if (!pode || pesoTeste > pesoMaxCfg || volumeTeste > volumeMaxCfg || teste.length > maxParadas || !escolherVeiculoParaCarga(teste)) {
+          fecharLote();
+        }
+        lote.push(p);
+      }
+      fecharLote();
+    }
+  }
+  return { rotas, naoAlocados, holdList };
+}
+
+function motivoNaoAlocadoCarga(lote) {
+  if (!lote.length) return "Carga vazia";
+  const pesoTotal = lote.reduce((s,p)=>s+p.pesoTotal,0);
+  const volumeTotal = lote.reduce((s,p)=>s+p.volumeTotal,0);
+  const notasTotal = lote.reduce((s,p)=>s+p.numNotas,0);
+  const maiorItem = getMaiorItemDaCarga(lote);
+  const veiculosOrdenados = [...vehicles].sort((a,b) => a.volumeMax - b.volumeMax || a.pesoMax - b.pesoMax);
+  
+  for (let v of veiculosOrdenados) {
+    if (!cabeNoVeiculoPorDimensao(maiorItem, v)) {
+      return `Item crítico (${formatNumber(maiorItem.altura)}x${formatNumber(maiorItem.largura)}x${formatNumber(maiorItem.profundidade)}m) excede dimensões do veículo ${v.nome}`;
+    }
+    if (pesoTotal > v.pesoMax) {
+      return `Peso total ${formatNumber(pesoTotal)} kg excede capacidade do veículo ${v.nome} (máx ${formatNumber(v.pesoMax)} kg)`;
+    }
+    if (volumeTotal > v.volumeMax) {
+      return `Volume total ${formatNumber(volumeTotal)} m³ excede capacidade do veículo ${v.nome} (máx ${formatNumber(v.volumeMax)} m³)`;
+    }
+    if (notasTotal > v.notasMax) {
+      return `Número de notas ${notasTotal} excede limite do veículo ${v.nome} (máx ${v.notasMax} notas)`;
+    }
+  }
+  
+  let motivos = [];
+  const maxPeso = Math.max(...veiculosOrdenados.map(v => v.pesoMax));
+  const maxVolume = Math.max(...veiculosOrdenados.map(v => v.volumeMax));
+  const maxNotas = Math.max(...veiculosOrdenados.map(v => v.notasMax));
+  if (pesoTotal > maxPeso) motivos.push(`peso (${formatNumber(pesoTotal)} kg > ${formatNumber(maxPeso)} kg)`);
+  if (volumeTotal > maxVolume) motivos.push(`volume (${formatNumber(volumeTotal)} m³ > ${formatNumber(maxVolume)} m³)`);
+  if (notasTotal > maxNotas) motivos.push(`notas (${notasTotal} > ${maxNotas})`);
+  if (motivos.length) return `Carga excede ${motivos.join(' e ')} mesmo nos maiores veículos disponíveis.`;
+  
+  return `Não foi possível alocar: verifique restrições de consolidação ou capacidade.`;
+}
+
+// ==================== IA DE SUGESTÕES ====================
+function gerarSugestoes(rotas) {
+  let sugestoes = [];
+  rotas.forEach(r => {
+    const ocupacao = (r.volumeTotal / r.veiculo.volumeMax) * 100;
+    if (ocupacao < 50) {
+      sugestoes.push(`Rota ${r.nomeCorredor}: baixa ocupação (${ocupacao.toFixed(0)}%)`);
+    }
+    if (ocupacao > 90) {
+      sugestoes.push(`Rota ${r.nomeCorredor}: risco de excesso (${ocupacao.toFixed(0)}%)`);
+    }
+    if (r.distanciaKm > 100) {
+      sugestoes.push(`Rota ${r.nomeCorredor}: distância alta (${r.distanciaKm.toFixed(0)} km)`);
+    }
+  });
+  return sugestoes;
+}
+
+// ==================== RENDERIZAÇÃO DOS RESULTADOS ====================
+function renderMapControls() {
+  let editor = document.getElementById("routeEditorList");
+  let unalloc = document.getElementById("unallocatedEditorList");
+  let holdDiv = document.getElementById("holdList");
+  let aguardandoDiv = document.getElementById("aguardandoDefinicaoList");
+  if (!ultimoResultado) return;
+  
+  editor.innerHTML = ultimoResultado.rotas.map((r, i) => {
+    const outrasRotas = ultimoResultado.rotas.filter(ro => ro.id !== r.id);
+    const moveOptions = outrasRotas.length ? `<select id="destSelect_${r.id}" style="font-size:12px; padding:4px;">${outrasRotas.map(ro => `<option value="${ro.id}">Rota ${ultimoResultado.rotas.findIndex(rr=>rr.id===ro.id)+1} - ${ro.nomeCorredor}</option>`).join('')}</select>` : '<span>Sem outras rotas</span>';
+    return `<div class="route-box">
+      <div class="route-title">🚛 Rota ${i+1} - ${r.veiculo?.nome}<span class="corridor-badge">${r.nomeCorredor}</span>${r.exclusivo?'<span class="pill pill-purple">🔒 Exclusivo</span>':''}
+        <button class="btn btn-blue" style="float:right; margin-left:8px;" onclick="verDetalheRota('${r.id}')">📋 Detalhe</button>
+        <button class="btn btn-green" style="float:right;" onclick="focusRouteOnMap('${r.id}')">🗺️ Foco</button>
+      </div>
+      <div class="small">${r.rodovia} | 📅 ${r.dataEntrega} | ${formatNumber(r.pesoTotal)} kg | ${formatNumber(r.volumeTotal)} m³ | ${formatNumber(r.distanciaKm)} km | ${formatCurrency(r.custoEstimado)}</div>
+      <div class="decision-box"><strong>Fator decisório:</strong> ${r.fatorDecisorio}<br><strong>Regras:</strong> ${(r.decisao?.regrasAplicadas||[]).join(" | ")}</div>
+      ${r.pedidos.map(p => `<div class="pedido-chip">
+        <strong>${p.os}</strong> - ${p.destinatario||"-"}<br>📍 ${p.cidade}/${p.uf} | 📅 ${p.dataPrevisao || "Sem data"} | ⚖ ${formatNumber(p.pesoTotal)} kg | 📦 ${formatNumber(p.volumeTotal)} m³${p.cubagemAuto?'<span class="pill pill-purple"> 🤖 Auto</span>':''}
+        <div class="btn-icon-group">
+          <button class="btn-remove" onclick="removerPedidoDaRota('${r.id}', '${p.os}')">🗑️ Remover</button>
+          <button class="btn-move" onclick="moverPedidoParaRota('${r.id}', '${p.os}', document.getElementById('destSelect_${r.id}').value)">➡️ Mover</button>
+        </div>
+      </div>`).join('')}
+      ${outrasRotas.length ? `<div style="margin-top:8px;"><label style="font-size:12px;">Mover para rota:</label> ${moveOptions}</div>` : ''}
+    </div>`;
+  }).join("") || "<div>Nenhuma rota</div>";
+  
+  unalloc.innerHTML = ultimoResultado.naoAlocados.map(p=>`<div class="pedido-chip"><strong>${p.os}</strong> - ${p.destinatario||"-"}<br>📍 ${p.cidade}/${p.uf}<br>⚖ ${formatNumber(p.pesoTotal)} kg | 📦 ${formatNumber(p.volumeTotal)} m³<br><span class="pill pill-yellow">${p.motivo||"Sem alocação"}</span></div>`).join("")||"<div>Todos alocados ✓</div>";
+  holdDiv.innerHTML = ultimoResultado.holdList.map(p=>`<div class="pedido-chip"><strong>${p.os}</strong> - ${p.destinatario||"-"}<br>📍 ${p.cidade}/${p.uf}<br>⚖ ${formatNumber(p.pesoTotal)} kg | 📦 ${formatNumber(p.volumeTotal)} m³<br><span class="pill pill-blue">${p.motivo||"Aguardando consolidação"}</span></div>`).join("")||"<div>Nenhum pedido em espera</div>";
+  
+  if (ultimoResultado.aguardandoDefinicao && ultimoResultado.aguardandoDefinicao.length) {
+    const rotasOptions = ultimoResultado.rotas.map(r => `<option value="${r.id}">Rota ${ultimoResultado.rotas.findIndex(rr=>rr.id===r.id)+1} - ${r.nomeCorredor} (${r.dataEntrega})</option>`).join('');
+    aguardandoDiv.innerHTML = ultimoResultado.aguardandoDefinicao.map(p => {
+      const sugestoes = ultimoResultado.rotas.filter(r => podeConsolidar(r.pedidos[0], p)).map(r => r.id);
+      const sugestoesHtml = sugestoes.length ? `<span class="small">Sugestões: ${sugestoes.map(id => `Rota ${ultimoResultado.rotas.findIndex(rr=>rr.id===id)+1}`).join(', ')}</span>` : '<span class="small">Nenhuma rota compatível no momento</span>';
+      return `<div class="pedido-chip">
+        <strong>${p.os}</strong> - ${p.destinatario||"-"}<br>📍 ${p.cidade}/${p.uf}<br>⚖ ${formatNumber(p.pesoTotal)} kg | 📦 ${formatNumber(p.volumeTotal)} m³<br>
+        <span class="pill pill-yellow">⚠️ ${p.paletizado ? 'Paletizado' : ''} ${p.agendamento ? 'Agendamento/Horário' : ''}</span><br>
+        ${sugestoesHtml}
+        <div style="margin-top:8px;">
+          <select id="moveAguardando_${p.os}" style="font-size:12px; padding:4px;"><option value="">Selecione uma rota</option>${rotasOptions}</select>
+          <button class="btn btn-blue btn-sm" onclick="moverAguardandoParaRota('${p.os}', document.getElementById('moveAguardando_${p.os}').value)">Mover para rota</button>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    aguardandoDiv.innerHTML = "<div>Nenhum pedido aguardando definição.</div>";
+  }
+}
+
+function renderResumo(){ 
+  let el=document.getElementById("resumoOperacional"); 
+  if(!ultimoResultado){ 
+    if(el) el.innerHTML="<p>Nenhum planejamento</p>"; 
+    return; 
+  } 
+  let {rotas,naoAlocados,holdList,aguardandoDefinicao}=ultimoResultado; 
+  let porCorredor=new Map(); 
+  for(let r of rotas){ 
+    if(!porCorredor.has(r.nomeCorredor)) porCorredor.set(r.nomeCorredor,[]); 
+    porCorredor.get(r.nomeCorredor).push(r); 
+  } 
+  let sugestoesHtml = "";
+  const sugestoes = gerarSugestoes(rotas);
+  if (sugestoes.length) {
+    sugestoesHtml = `<div class="card"><h3>🧠 Sugestões Inteligentes</h3>${sugestoes.map(s => `<div class="inline-alert">${s}</div>`).join("")}</div>`;
+  } else {
+    sugestoesHtml = `<div class="card"><h3>🧠 Sugestões Inteligentes</h3><div>Tudo otimizado ✅</div></div>`;
+  }
+  if(el) el.innerHTML=`<div class="grid grid-2"><div class="metric"><div class="label">Rotas</div><div class="value">${rotas.length}</div></div><div class="metric"><div class="label">Não Alocados</div><div class="value">${naoAlocados.length}</div></div><div class="metric"><div class="label">Aguardando (Hold)</div><div class="value">${holdList.length}</div></div><div class="metric"><div class="label">Aguardando Definição</div><div class="value">${aguardandoDefinicao.length}</div></div></div><h3>Por Corredor</h3><div class="table-wrap" style="padding:12px;">${Array.from(porCorredor.entries()).map(([nome,rs])=>`<div><strong>${nome}</strong>: ${rs.length} rotas, ${formatNumber(rs.reduce((s,r)=>s+r.pesoTotal,0))} kg, ${formatCurrency(rs.reduce((s,r)=>s+r.custoEstimado,0))}</div>`).join("") || "<div>Sem corredores</div>"}</div>${sugestoesHtml}`; 
+}
+
+function verDetalheRota(rotaId) { 
+  const rota = ultimoResultado?.rotas?.find(r => r.id === rotaId); 
+  if (!rota) return; 
+  const ocupacao = (rota.volumeTotal / rota.veiculo.volumeMax) * 100;
+  const cor = ocupacao < 50 ? "#ef4444" : (ocupacao < 80 ? "#f59e0b" : "#22c55e");
+  let html = `<h3>Detalhes da Rota</h3><p><strong>Corredor:</strong> ${rota.nomeCorredor} (${rota.rodovia})</p><p><strong>Data de Entrega:</strong> ${rota.dataEntrega}</p><p><strong>Veículo:</strong> ${rota.veiculo?.nome} (${formatNumber(rota.veiculo?.volumeMax)} m³, ${formatNumber(rota.veiculo?.pesoMax)} kg)</p>`;
+  html += `
+    <div class="ocupacao-box">
+      <div class="ocupacao-label">📦 Ocupação do veículo (volume)</div>
+      <div class="ocupacao-bar">
+        <div class="ocupacao-fill" style="width: ${ocupacao}%; background: ${cor};"></div>
+      </div>
+      <div class="ocupacao-text">${ocupacao.toFixed(0)}% (${formatNumber(rota.volumeTotal)} m³ / ${formatNumber(rota.veiculo?.volumeMax)} m³)</div>
+    </div>
+  `;
+  html += `<p><strong>Fator Decisório:</strong> ${rota.fatorDecisorio}</p><div class="decision-box"><strong>Resumo decisório</strong><br>${rota.decisao?.motivoDimensao || "-"}<br>Corredor/Regra: ${rota.decisao?.corredor || "-"}<br>Regras aplicadas: ${(rota.decisao?.regrasAplicadas||[]).join(" | ")}<br>Observações: ${(rota.decisao?.observacoes||[]).join(" | ")}</div><p><strong>Totais:</strong> ${formatNumber(rota.pesoTotal)} kg, ${formatNumber(rota.volumeTotal)} m³, ${rota.numNotas} notas, ${formatNumber(rota.distanciaKm)} km, ${formatCurrency(rota.custoEstimado)}</p>`; 
+  if (rota.itemCritico?.item) { const it = rota.itemCritico.item; html += `<div class="critical-item"><strong>🎯 Item crítico que definiu o veículo</strong><br>Código: ${it.codigo || '-'}<br>Descrição: ${it.descricao || '-'}<br>Dimensões: ${formatNumber(it.altura||0)} x ${formatNumber(it.largura||0)} x ${formatNumber(it.profundidade||0)} m<br>Peso: ${formatNumber(it.peso||0)} kg | Volume: ${formatNumber(it.volume||0)} m³</div>`; } 
+  html += `<h4>Pedidos na rota:</h4>`; 
+  for (let p of rota.pedidos) { 
+    const dataEntrega = p.dataPrevisao ? p.dataPrevisao : "Sem data";
+    html += `<div class="pedido-chip">
+      <strong>${p.os}</strong> - ${p.destinatario||"-"}<br>
+      📍 ${p.cidade}/${p.uf}<br>
+      📅 ${dataEntrega}<br>
+      ⚖ ${formatNumber(p.pesoTotal)} kg | 📦 ${formatNumber(p.volumeTotal)} m³
+      <details><summary>Itens</summary>`;
+    for (let item of p.items) {
+      html += `<div style="margin:5px 0; padding-left:10px; border-left:2px solid #ccc;">
+        <strong>${item.codigo || '-'}</strong> - ${item.descricao || '-'}<br>
+        Dimensões: ${formatNumber(item.altura||0)} x ${formatNumber(item.largura||0)} x ${formatNumber(item.profundidade||0)} m | ${formatNumber(item.peso||0)} kg | ${formatNumber(item.volume||0)} m³
+      </div>`;
+    }
+    html += `</details></div>`;
+  } 
+  document.getElementById("modalContent").innerHTML = html; 
+  document.getElementById("routeModal").style.display = "block";
+}
+
+// ==================== FUNÇÕES PARA MOVER/EXCLUIR PEDIDOS ====================
+function removerPedidoDaRota(rotaId, pedidoOs) {
+  if (!ultimoResultado) return;
+  const rotaIndex = ultimoResultado.rotas.findIndex(r => r.id === rotaId);
+  if (rotaIndex === -1) return;
+  const rota = ultimoResultado.rotas[rotaIndex];
+  const pedidoIndex = rota.pedidos.findIndex(p => p.os === pedidoOs);
+  if (pedidoIndex === -1) return;
+  const pedidoRemovido = rota.pedidos[pedidoIndex];
+  rota.pedidos.splice(pedidoIndex, 1);
+  rota.pesoTotal = rota.pedidos.reduce((s,p)=>s+p.pesoTotal,0);
+  rota.volumeTotal = rota.pedidos.reduce((s,p)=>s+p.volumeTotal,0);
+  rota.numNotas = rota.pedidos.reduce((s,p)=>s+p.numNotas,0);
+  if (rota.pedidos.length === 0) {
+    ultimoResultado.rotas.splice(rotaIndex, 1);
+  } else {
+    const novoVeiculo = escolherVeiculoParaCarga(rota.pedidos);
+    if (novoVeiculo) {
+      rota.veiculo = novoVeiculo;
+      const novaDecisao = gerarFatorDecisorio(rota.pedidos, novoVeiculo, rota.grupoChave);
+      rota.fatorDecisorio = novaDecisao.motivoDimensao;
+      rota.decisao = novaDecisao;
+      rota.maiorItem = novaDecisao.maiorItem;
+      rota.itemCritico = { item: novaDecisao.maiorItem };
+    } else {
+      ultimoResultado.naoAlocados.push(...rota.pedidos.map(p => ({ ...p, motivo: "Rota sem veículo após remoção" })));
+      ultimoResultado.rotas.splice(rotaIndex, 1);
+    }
+  }
+  ultimoResultado.naoAlocados.push({ ...pedidoRemovido, motivo: "Removido manualmente da rota" });
+  atualizarMetricas();
+  renderMapControls();
+  renderResumo();
+  if (map && geocoder) desenharRotas(ultimoResultado.rotas, document.getElementById("depot").value);
+  setStatus("Pedido removido da rota.", "warn");
+}
+
+function moverPedidoParaRota(rotaOrigemId, pedidoOs, rotaDestinoId) {
+  if (!ultimoResultado) return;
+  const rotaOrigem = ultimoResultado.rotas.find(r => r.id === rotaOrigemId);
+  if (!rotaOrigem) return;
+  const pedidoIndex = rotaOrigem.pedidos.findIndex(p => p.os === pedidoOs);
+  if (pedidoIndex === -1) return;
+  const pedido = rotaOrigem.pedidos[pedidoIndex];
+  const rotaDestino = ultimoResultado.rotas.find(r => r.id === rotaDestinoId);
+  if (!rotaDestino) return;
+  rotaOrigem.pedidos.splice(pedidoIndex, 1);
+  rotaDestino.pedidos.push(pedido);
+  if (rotaOrigem.pedidos.length === 0) {
+    const idx = ultimoResultado.rotas.findIndex(r => r.id === rotaOrigemId);
+    if (idx !== -1) ultimoResultado.rotas.splice(idx, 1);
+  } else {
+    rotaOrigem.pesoTotal = rotaOrigem.pedidos.reduce((s,p)=>s+p.pesoTotal,0);
+    rotaOrigem.volumeTotal = rotaOrigem.pedidos.reduce((s,p)=>s+p.volumeTotal,0);
+    rotaOrigem.numNotas = rotaOrigem.pedidos.reduce((s,p)=>s+p.numNotas,0);
+    const novoVeiculo = escolherVeiculoParaCarga(rotaOrigem.pedidos);
+    if (novoVeiculo) {
+      rotaOrigem.veiculo = novoVeiculo;
+      const novaDecisao = gerarFatorDecisorio(rotaOrigem.pedidos, novoVeiculo, rotaOrigem.grupoChave);
+      rotaOrigem.fatorDecisorio = novaDecisao.motivoDimensao;
+      rotaOrigem.decisao = novaDecisao;
+      rotaOrigem.maiorItem = novaDecisao.maiorItem;
+      rotaOrigem.itemCritico = { item: novaDecisao.maiorItem };
+    } else {
+      ultimoResultado.naoAlocados.push(...rotaOrigem.pedidos.map(p => ({ ...p, motivo: "Rota sem veículo após movimentação" })));
+      const idx = ultimoResultado.rotas.findIndex(r => r.id === rotaOrigemId);
+      if (idx !== -1) ultimoResultado.rotas.splice(idx, 1);
+    }
+  }
+  rotaDestino.pesoTotal = rotaDestino.pedidos.reduce((s,p)=>s+p.pesoTotal,0);
+  rotaDestino.volumeTotal = rotaDestino.pedidos.reduce((s,p)=>s+p.volumeTotal,0);
+  rotaDestino.numNotas = rotaDestino.pedidos.reduce((s,p)=>s+p.numNotas,0);
+  const novoVeiculoDest = escolherVeiculoParaCarga(rotaDestino.pedidos);
+  if (novoVeiculoDest) {
+    rotaDestino.veiculo = novoVeiculoDest;
+    const novaDecisao = gerarFatorDecisorio(rotaDestino.pedidos, novoVeiculoDest, rotaDestino.grupoChave);
+    rotaDestino.fatorDecisorio = novaDecisao.motivoDimensao;
+    rotaDestino.decisao = novaDecisao;
+    rotaDestino.maiorItem = novaDecisao.maiorItem;
+    rotaDestino.itemCritico = { item: novaDecisao.maiorItem };
+  } else {
+    ultimoResultado.naoAlocados.push(...rotaDestino.pedidos.map(p => ({ ...p, motivo: "Rota sem veículo após movimentação" })));
+    const idx = ultimoResultado.rotas.findIndex(r => r.id === rotaDestinoId);
+    if (idx !== -1) ultimoResultado.rotas.splice(idx, 1);
+  }
+  atualizarMetricas();
+  renderMapControls();
+  renderResumo();
+  if (map && geocoder) desenharRotas(ultimoResultado.rotas, document.getElementById("depot").value);
+  setStatus(`Pedido ${pedido.os} movido para rota ${rotaDestino.nomeCorredor}.`, "ok");
+}
+
+function moverAguardandoParaRota(pedidoOs, rotaId) {
+  if (!ultimoResultado || !rotaId) return;
+  const pedidoIndex = ultimoResultado.aguardandoDefinicao.findIndex(p => p.os === pedidoOs);
+  if (pedidoIndex === -1) return;
+  const pedido = ultimoResultado.aguardandoDefinicao[pedidoIndex];
+  const rota = ultimoResultado.rotas.find(r => r.id === rotaId);
+  if (!rota) return;
+
+  if (!podeConsolidar(rota.pedidos[0], pedido)) {
+    alert("Pedido não é compatível com a rota selecionada (corredor/data).");
+    return;
+  }
+  const teste = [...rota.pedidos, pedido];
+  const veiculo = escolherVeiculoParaCarga(teste);
+  if (!veiculo) {
+    alert("Não cabe na rota (capacidade de peso, volume ou notas excedida).");
     return;
   }
 
-  const rows = [
-    ["NF Remessa","NF Venda","Status","Fornecedor","Resumo"],
-    ...state.loteResultados.map(x => [x.nfRemessa, x.nfVenda, x.status, x.fornecedor, x.resumo])
-  ];
+  rota.pedidos.push(pedido);
+  rota.pesoTotal = rota.pedidos.reduce((s,p)=>s+p.pesoTotal,0);
+  rota.volumeTotal = rota.pedidos.reduce((s,p)=>s+p.volumeTotal,0);
+  rota.numNotas = rota.pedidos.reduce((s,p)=>s+p.numNotas,0);
+  rota.veiculo = veiculo;
+  const novaDecisao = gerarFatorDecisorio(rota.pedidos, veiculo, rota.grupoChave);
+  rota.fatorDecisorio = novaDecisao.motivoDimensao;
+  rota.decisao = novaDecisao;
+  rota.maiorItem = novaDecisao.maiorItem;
+  rota.itemCritico = { item: novaDecisao.maiorItem };
 
-  const csv = rows.map(r =>
-    r.map(x => `"${String(x || "").replace(/"/g,'""')}"`).join(";")
-  ).join("\n");
+  ultimoResultado.aguardandoDefinicao.splice(pedidoIndex, 1);
 
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "relatorio_validacao_lote.csv";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  atualizarMetricas();
+  renderMapControls();
+  renderResumo();
+  if (map && geocoder) desenharRotas(ultimoResultado.rotas, document.getElementById("depot").value);
+  setStatus(`Pedido ${pedido.os} adicionado à rota.`, "ok");
 }
 
-/* =========================
-   INIT
-========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  initTabs();
-  setFixedFields();
-  refreshHistoryUI();
-  limparTudo();
+// ==================== PLANEJAMENTO PRINCIPAL ====================
+let ultimoResultado = null;
 
-  document.getElementById("btnPickRemessa").addEventListener("click", () => document.getElementById("fileRemessa").click());
-  document.getElementById("btnPickVenda").addEventListener("click", () => document.getElementById("fileVenda").click());
-  document.getElementById("btnPickDepositantes").addEventListener("click", () => document.getElementById("fileDepositantes").click());
-
-  document.getElementById("fileRemessa").addEventListener("change", async (e) => {
-    const f = e.target.files[0];
-    if(!f) return;
-    try{
-      const text = await f.text();
-      state.remessaDoc = parseXml(text);
-      state.remessa = extractNFe(state.remessaDoc);
-      document.getElementById("badgeRemessa").textContent = "carregado";
-      document.getElementById("nameRemessa").textContent = f.name;
-    }catch(err){
-      alert("Falha ao ler XML Remessa: " + err.message);
-    }finally{
-      e.target.value = "";
-    }
-  });
-
-  document.getElementById("fileVenda").addEventListener("change", async (e) => {
-    const f = e.target.files[0];
-    if(!f) return;
-    try{
-      const text = await f.text();
-      state.vendaDoc = parseXml(text);
-      state.venda = extractNFe(state.vendaDoc);
-      document.getElementById("badgeVenda").textContent = "carregado";
-      document.getElementById("nameVenda").textContent = f.name;
-    }catch(err){
-      alert("Falha ao ler XML Venda: " + err.message);
-    }finally{
-      e.target.value = "";
-    }
-  });
-
-  document.getElementById("fileDepositantes").addEventListener("change", async (e) => {
-    const f = e.target.files[0];
-    if(!f) return;
-    try{
-      const text = await f.text();
-      state.depositantesSet = parseDepositantesText(text);
-      document.getElementById("infoDepositantes").textContent = "Depositantes carregados: " + state.depositantesSet.size;
-      alert("Depositantes importados: " + state.depositantesSet.size);
-    }catch(err){
-      alert("Falha ao importar depositantes: " + err.message);
-    }finally{
-      e.target.value = "";
-    }
-  });
-
-  document.getElementById("btnValidar").addEventListener("click", () => {
-    state.lastRules = validarTudo();
-    renderRules(state.lastRules);
-    setResultado(state.lastRules);
-    document.getElementById("msgFornecedor").value = buildMensagemFornecedor(state.lastRules);
-    montarListaItensNCM();
-  });
-
-  document.getElementById("btnExport").addEventListener("click", exportCsv);
-  document.getElementById("btnSalvarHistorico").addEventListener("click", salvarHistorico);
-  document.getElementById("btnLimpar").addEventListener("click", limparTudo);
-
-  document.getElementById("btnPickLote").addEventListener("click", () => {
-    document.getElementById("fileLote").click();
-  });
-
-  document.getElementById("fileLote").addEventListener("change", async (e) => {
-    const files = Array.from(e.target.files || []);
-    if(!files.length) return;
-
-    await importarLoteArquivos(files);
-    e.target.value = "";
-  });
-
-  document.getElementById("btnValidarLote").addEventListener("click", () => {
-    if(!state.loteDocs.length){
-      alert("Importe os XMLs do lote primeiro.");
-      return;
-    }
-    parearLote();
-  });
-
-  document.getElementById("btnExportLote").addEventListener("click", exportCsvLote);
-});
-
-/* =========================
-   IMPORT DEPOSITANTES
-========================= */
-function parseDepositantesText(text){
-  const digits = text.match(/\d{14}/g) || [];
-  return new Set(digits);
+function atualizarMetricas(){ 
+  setTextSafe("mPedidos", pedidos.length);
+  setTextSafe("mAlocados", ultimoResultado?.aprovados?.length || 0);
+  setTextSafe("mNaoAlocados", ultimoResultado?.naoAlocados?.length || 0);
+  setTextSafe("mHold", ultimoResultado?.holdList?.length || 0);
+  setTextSafe("mAguardandoDefinicao", ultimoResultado?.aguardandoDefinicao?.length || 0);
+  setTextSafe("mRotas", ultimoResultado?.rotas?.length || 0);
+  setTextSafe("mCustoTotal", formatCurrency(ultimoResultado?.rotas?.reduce((s,r)=>s+(r.custoEstimado||0),0)||0));
 }
-  document.getElementById("btnConfig").addEventListener("click", () => {
 
-  const senha = prompt("Digite a senha de administrador:");
+async function executarPlanejamento(){ 
+  try{ 
+    carregarCorredoresDaUI(); 
+    if(!vehicles.length){ setStatus("Cadastre veículos","err"); return; } 
+    if(!pedidos.length){ setStatus("Importe pedidos","err"); return; } 
+    if(!geocoder){ setStatus("Aguarde carregamento do mapa","warn"); return; } 
+    setStatus("Geocodificando...","warn"); 
+    depotCoords=await geocodeAddress(document.getElementById("depot").value); 
+    let cubagemAutoCount = 0; 
+    for(let p of pedidos){ 
+      try{ 
+        let coord=await geocodeAddress(montarEndereco(p)); 
+        p.lat=coord.lat; 
+        p.lng=coord.lng; 
+        if(p.cubagemAuto) cubagemAutoCount++; 
+      }catch(e){ console.warn(`Erro geocode ${p.os}`); } 
+    } 
+    let aprovados=[], restricoes=[], aguardandoDefinicao=[]; 
+    for(let p of pedidos){ 
+      if(p.exclusivo && document.getElementById("regraExclusivo").checked){ 
+        aprovados.push(p); 
+        continue; 
+      } 
+      if(p.paletizado || p.agendamento){ 
+        aguardandoDefinicao.push(p); 
+        continue; 
+      } 
+      let isRod=normalizarTexto(p.modalidade).toLowerCase()==="rodoviario"; 
+      if(document.getElementById("regraLeve").checked && isRod && p.pesoTotal<=1000) aprovados.push(p); 
+      else if(document.getElementById("regraPesado").checked && isRod && p.pesoTotal>1000) aprovados.push(p); 
+      else aprovados.push(p); 
+    } 
+    aprovados = aprovados.map(p => ({ ...p, grupoConsolidado: obterChaveAgrupamento(p) })); 
+    let {rotas,naoAlocados,holdList}=await montarRotasInteligentes(aprovados); 
+    setStatus("Desenhando rotas...","warn"); 
+    await desenharRotas(rotas,document.getElementById("depot").value); 
+    ultimoResultado={rotas,naoAlocados,aprovados,restricoes,holdList,aguardandoDefinicao,cubagemAutoCount}; 
+    atualizarMetricas(); 
+    renderResumo(); 
+    renderMapControls(); 
+    showTab("resultado", document.querySelectorAll(".nav-btn")[3]); 
+    setStatus(`✅ ${rotas.length} rotas | ${naoAlocados.length} não alocados | ${holdList.length} aguardando | ${aguardandoDefinicao.length} aguardando definição`,"ok"); 
+  }catch(err){ 
+    console.error(err); 
+    setStatus(`Erro: ${err.message}`,"err"); 
+  } 
+}
+function replanejarRotas() { 
+  if (pedidos.length === 0) { alert("Nenhum pedido importado. Importe um CSV primeiro."); showTab("pedidos"); return; } 
+  if (vehicles.length === 0) { alert("Nenhum veículo cadastrado. Adicione veículos na aba Parâmetros."); showTab("parametros"); return; } 
+  setStatus("Replanejando com IA...", "warn"); 
+  clearRoutes(); 
+  ultimoResultado = null; 
+  atualizarMetricas(); 
+  document.getElementById("resumoOperacional").innerHTML = ""; 
+  document.getElementById("routeEditorList").innerHTML = ""; 
+  document.getElementById("unallocatedEditorList").innerHTML = ""; 
+  document.getElementById("holdList").innerHTML = ""; 
+  document.getElementById("aguardandoDefinicaoList").innerHTML = ""; 
+  executarPlanejamento(); 
+}
+function exportarRelatorioCSV(){ 
+  if(!ultimoResultado){ alert("Execute o planejamento"); return; } 
+  let linhas=[["ROTA","CORREDOR","DATA","VEICULO","PESO","VOLUME","KM","CUSTO","FATOR_DECISORIO","REGRAS","PEDIDOS"]]; 
+  ultimoResultado.rotas.forEach((r,i)=>{ 
+    linhas.push([`Rota ${i+1}`,r.nomeCorredor,r.dataEntrega,r.veiculo?.nome||"",r.pesoTotal,r.volumeTotal,r.distanciaKm?.toFixed(1)||0,r.custoEstimado?.toFixed(2)||0,r.fatorDecisorio,(r.decisao?.regrasAplicadas||[]).join(" | "),r.pedidos.map(p=>p.os).join(";")]); 
+  }); 
+  let csv=Papa.unparse(linhas); 
+  let blob=new Blob([csv],{type:"text/csv;charset=utf-8"}); 
+  let a=document.createElement("a"); 
+  a.href=URL.createObjectURL(blob); 
+  a.download="rotas.csv"; 
+  a.click(); 
+  URL.revokeObjectURL(a.href); 
+}
+function baixarModeloPedidos(){ 
+  let csv=`OS,DESTINATARIO,CEP,CIDADE,UF,PESO BRUTO,METROCUBICO,DATAPREVISAO,OBS,CODIGO PRODUTO,PRODUTO,FOTO_URL,ALTURA,LARGURA,PROFUNDIDADE,LOGRADOURO,NUMERO,BAIRRO
+5035441,COSTAZUL ALIMENTOS LTDA,24800-000,ITABORAI,RJ,36,,25/03/2026,,12345,CAIXA LEVE,,0.40,0.30,0.35,RUA A,100,CENTRO
+1001,CLIENTE TESTE,13000-000,CAMPINAS,SP,450,3.2,25/03/2026,,789,PAINEL ELETRÔNICO,https://placehold.co/60x60?text=Painel,1.50,1.20,2.80,RUA B,200,DISTRITO
+1002,CLIENTE LEVE,07190-000,GUARULHOS,SP,85,,24/03/2026,,101,CAIXA PEQUENA,,0.30,0.25,0.20,RUA C,50,CENTRO
+1003,EXCLUSIVO,40000-000,SALVADOR,BA,2500,15.0,26/03/2026,"CARRO EXCLUSIVO",202,MOTOR GRANDE,https://placehold.co/60x60?text=Motor,2.40,1.80,4.20,AV D,500,INDUSTRIAL
+1004,FEIRA SANTANA,44000-000,FEIRA DE SANTANA,BA,320,2.5,25/03/2026,,303,ELETRODOMÉSTICO,,1.20,0.90,1.10,RUA E,45,CENTRO
+1005,SALVADOR OUTRO,40000-000,SALVADOR,BA,180,1.2,25/03/2026,"AGENDAMENTO 10:00",404,ACESSÓRIO,,0.70,0.60,0.90,RUA F,10,CENTRO`; 
+  let blob=new Blob([csv],{type:"text/csv;charset=utf-8"}); 
+  let a=document.createElement("a"); 
+  a.href=URL.createObjectURL(blob); 
+  a.download="pedidos_modelo.csv"; 
+  a.click(); 
+  URL.revokeObjectURL(a.href); 
+}
 
-  if(senha === "admin123"){
-
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-
-    document.getElementById("btnConfig").classList.add("active");
-    document.getElementById("tab-config").classList.add("active");
-
-  }else{
-
-    alert("Acesso negado.");
-
+function loadGoogleMaps() {
+  const mapEl = document.getElementById("map");
+  if (!APP_CONFIG.GOOGLE_API_KEY || APP_CONFIG.GOOGLE_API_KEY === "AIzaSyCBovqGqMOw9wYYzZQCrZ2Wttv42vEG3ds") {
+    if (mapEl) mapEl.innerHTML = "Mapa operacional local. Preencha APP_CONFIG.GOOGLE_API_KEY para Google Maps real.";
+    return;
   }
+  if (window.google && window.google.maps) {
+    if (mapEl && !window.map) {
+      window.map = new google.maps.Map(mapEl, { center: depotCoords || { lat: -23.55, lng: -46.63 }, zoom: 8 });
+      window.geocoder = new google.maps.Geocoder();
+      map = window.map;
+      geocoder = window.geocoder;
+    }
+    return;
+  }
+  window.initMapCallback = function() {
+    if (mapEl && window.google && window.google.maps) {
+      window.map = new google.maps.Map(mapEl, { center: depotCoords || { lat: -23.55, lng: -46.63 }, zoom: 8 });
+      window.geocoder = new google.maps.Geocoder();
+      map = window.map;
+      geocoder = window.geocoder;
+      console.log("Google Maps carregado com sucesso");
+    }
+  };
+  const script = document.createElement("script");
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${APP_CONFIG.GOOGLE_API_KEY}&libraries=places&callback=initMapCallback`;
+  script.async = true;
+  script.defer = true;
+  script.onerror = () => { if (mapEl) mapEl.innerHTML = "Erro ao carregar Google Maps. Verifique a chave e as APIs ativadas."; };
+  document.head.appendChild(script);
+}
 
+function initCSVImport() { 
+  const input = document.getElementById("ordersCsvFile"); 
+  if (!input) return; 
+  input.addEventListener("change", function (e) { 
+    const file = e.target.files[0]; 
+    if (!file) return; 
+    Papa.parse(file, { 
+      header: true, 
+      skipEmptyLines: true, 
+      complete: (res) => { 
+        try { 
+          pedidos = agruparPedidosPorOS(res.data || []); 
+          renderPedidosSeparados(); 
+          renderOperacaoLeveList(); 
+          atualizarMetricas(); 
+          alert(`${pedidos.length} pedidos importados`); 
+        } catch (err) { 
+          console.error(err); 
+          alert("Erro ao processar os pedidos."); 
+        } 
+        e.target.value = ""; 
+      }, 
+      error: (err) => { 
+        console.error(err); 
+        alert("Erro ao importar o CSV."); 
+      } 
+    }); 
+  }); 
+}
+
+document.addEventListener("DOMContentLoaded", () => { 
+  carregarCorredoresDaUI(); 
+  loadLocalCaches(); 
+  carregarDoStorageLocal(); 
+  renderVehicles(); 
+  renderPedidosSeparados(); 
+  renderOperacaoLeveList(); 
+  atualizarMetricas(); 
+  loadGoogleMaps(); 
+  initCSVImport(); 
+  if (vehicles.length === 0) adicionarVeiculoPadrao(); 
 });
 </script>
 </body>
