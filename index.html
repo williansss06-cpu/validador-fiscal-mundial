@@ -674,7 +674,14 @@ const CFG = {
   CFOP_SP: ["5949","5923"],
   CFOP_FORA_SP: ["6949","6923"],
 
-  CST_CSOSN_PERMITIDOS: ["040","0400","041","090"],
+  CST_CSOSN_PERMITIDOS: [
+  "040",
+  "0400",
+  "041",
+  "090",
+  "400",
+  "102"
+]
 
   REMESSA_PREFIXOS_OK: ["REM", "OUTRAS", "SIMPLES", "terceiros"],
   VENDA_PREFIXOS_OK: ["VENDA", "REVENDA"],
@@ -699,6 +706,7 @@ const NCM_ENGINE = {
     { keywords:["COPO","BRINDE","PVC","ACRILICO","PLASTICO"], expected:["3926","3924"] },
     { keywords:["SUPORTE","ESTRUTURA","METAL","FERRO","ACO"], expected:["7326","7616"] },
     { keywords:["PALLET","PALETE","MADEIRA"], expected:["4415","4420"] }
+    { keywords:["SACOLA","BOLSA","EMBALAGEM"], expected:["4819","4823","3926"] }
   ]
 };
 
