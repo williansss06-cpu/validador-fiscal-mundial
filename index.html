@@ -693,8 +693,23 @@ const CFG = {
   "102"
 ],
 
-REMESSA_PREFIXOS_OK: ["REM", "OUTRAS", "SIMPLES", "TERCEIROS"],
-  VENDA_PREFIXOS_OK: ["VENDA", "REVENDA"],
+REMESSA_PREFIXOS_OK: [
+  "REM",
+  "REMESSA",
+  "OUTRA SAIDA",
+  "OUTRAS SAIDAS",
+  "TERCEIROS",
+  "CONTA E ORDEM",
+  "ST",
+  "SI"
+],
+
+VENDA_PREFIXOS_OK: [
+  "VENDA",
+  "REVENDA",
+  "ST",
+  "SI"
+],
 
   TOLERANCIA_VALOR: 0.02,
   ALIQ_PADRAO: 18,
@@ -932,9 +947,9 @@ function normalizeText(s){
     .toUpperCase();
 }
 
-function startsWithAny(text, arr){
+function containsAny(text, arr){
   const t = normalizeText(text);
-  return arr.some(p => t.startsWith(normalizeText(p)));
+  return arr.some(p => t.includes(normalizeText(p)));
 }
 
 function getFirstText(doc, selectors){
@@ -1200,86 +1215,155 @@ function validarTudo(){
     rules.push(rule("WARN","Nota de venda não importada","Sem XML Venda — algumas validações ficarão pendentes."));
   }
 
-  document.getElementById("infoChave").textContent = "Chave Remessa: " + (state.remessa.chave || "—");
-  document.getElementById("infoNF").textContent = "NF Remessa: " + (state.remessa.nNF || "—") + " • NF Venda: " + (state.venda?.nNF || "—");
-  document.getElementById("depositanteVenda").value = state.venda ? formatCnpjOrDash(state.venda.destDoc) : "—";
+  document.getElementById("infoChave").textContent =
+    "Chave Remessa: " + (state.remessa.chave || "—");
+
+  document.getElementById("infoNF").textContent =
+    "NF Remessa: " + (state.remessa.nNF || "—") +
+    " • NF Venda: " + (state.venda?.nNF || "—");
+
+  document.getElementById("depositanteVenda").value =
+    state.venda ? formatCnpjOrDash(state.venda.destDoc) : "—";
 
   const remDest = onlyDigits(state.remessa.destDoc);
   const cnpjM = onlyDigits(CFG.CNPJ_MUNDIAL);
+
   if(remDest === cnpjM){
     rules.push(rule("OK","CNPJ Destinatário","Remessa para Mundial."));
   }else{
-    rules.push(rule("ERRO","CNPJ Destinatário",`Encontrado ${formatCnpjOrDash(remDest)} | Esperado ${CFG.CNPJ_MUNDIAL}`));
+    rules.push(rule(
+      "ERRO",
+      "CNPJ Destinatário",
+      `Encontrado ${formatCnpjOrDash(remDest)} | Esperado ${CFG.CNPJ_MUNDIAL}`
+    ));
   }
 
   const cep = onlyDigits(state.remessa.cep);
   const bairro = normalizeText(state.remessa.bairro);
-  const bairroOk = CFG.BAIRROS_ACEITOS.some(b => bairro === normalizeText(b) || bairro.includes(normalizeText(b)));
+
+  const bairroOk = CFG.BAIRROS_ACEITOS.some(b =>
+    bairro === normalizeText(b) ||
+    bairro.includes(normalizeText(b))
+  );
+
   if(cep === onlyDigits(CFG.CEP_ACEITO) && bairroOk){
     rules.push(rule("OK","Endereço Mundial","CEP + Bairro corretos."));
   }else{
-    rules.push(rule("ERRO","Endereço Mundial",`CEP ${cep || "—"} | Bairro ${bairro || "—"}`));
+    rules.push(rule(
+      "ERRO",
+      "Endereço Mundial",
+      `CEP ${cep || "—"} | Bairro ${bairro || "—"}`
+    ));
   }
 
-  if(startsWithAny(state.remessa.natOp, CFG.REMESSA_PREFIXOS_OK)){
-    rules.push(rule("OK","Natureza Remessa", normalizeText(state.remessa.natOp)));
+  // ✅ NATUREZA REMESSA FLEXÍVEL
+  if(containsAny(state.remessa.natOp, CFG.REMESSA_PREFIXOS_OK)){
+    rules.push(rule(
+      "OK",
+      "Natureza Remessa",
+      normalizeText(state.remessa.natOp)
+    ));
   }else{
-    rules.push(rule("ERRO","Natureza Remessa", normalizeText(state.remessa.natOp) || "Não encontrada"));
+    rules.push(rule(
+      "ERRO",
+      "Natureza Remessa",
+      normalizeText(state.remessa.natOp) || "Não encontrada"
+    ));
   }
 
   const ufEmit = (state.remessa.emitUF || "").trim().toUpperCase();
   const permitidos = ufEmit === "SP" ? CFG.CFOP_SP : CFG.CFOP_FORA_SP;
-  const cfops = (state.remessa.itens || []).map(it => it.CFOP).filter(Boolean);
+
+  const cfops = (state.remessa.itens || [])
+    .map(it => it.CFOP)
+    .filter(Boolean);
+
   if(cfops.length && cfops.every(c => permitidos.includes(c))){
-    rules.push(rule("OK","CFOP por UF", `${ufEmit || "—"}: ${permitidos.join(" / ")}`));
+    rules.push(rule(
+      "OK",
+      "CFOP por UF",
+      `${ufEmit || "—"}: ${permitidos.join(" / ")}`
+    ));
   }else{
-    rules.push(rule("ERRO","CFOP por UF", `CFOP fora do permitido para UF ${ufEmit || "—"}`));
+    rules.push(rule(
+      "ERRO",
+      "CFOP por UF",
+      `CFOP fora do permitido para UF ${ufEmit || "—"}`
+    ));
   }
 
   const itensRem = state.remessa.itens || [];
   const cstInvalidos = [];
+
   itensRem.forEach(it => {
     let raw = onlyDigits(it.CSOSN || it.CST || "");
+
     if(raw.length === 2) raw = "0" + raw;
     if(raw.length === 1) raw = "00" + raw;
+
     if(raw && !CFG.CST_CSOSN_PERMITIDOS.includes(raw)){
       cstInvalidos.push(`${it.cProd || it.xProd}:${raw}`);
     }
   });
+
   if(cstInvalidos.length === 0){
-    rules.push(rule("OK","CST/CSOSN","040 / 041 / 090"));
+    rules.push(rule("OK","CST/CSOSN","CST/CSOSN permitido."));
   }else{
     rules.push(rule("ERRO","CST/CSOSN", cstInvalidos.join(" • ")));
   }
 
   if(state.venda){
-    if(startsWithAny(state.venda.natOp, CFG.VENDA_PREFIXOS_OK)){
-      rules.push(rule("OK","Natureza Venda", normalizeText(state.venda.natOp)));
+
+    // ✅ NATUREZA VENDA FLEXÍVEL
+    if(containsAny(state.venda.natOp, CFG.VENDA_PREFIXOS_OK)){
+      rules.push(rule(
+        "OK",
+        "Natureza Venda",
+        normalizeText(state.venda.natOp)
+      ));
     }else{
-      rules.push(rule("ERRO","Natureza Venda", normalizeText(state.venda.natOp) || "Não encontrada"));
+      rules.push(rule(
+        "ERRO",
+        "Natureza Venda",
+        normalizeText(state.venda.natOp) || "Não encontrada"
+      ));
     }
 
     const emitR = onlyDigits(state.remessa.emitCnpj);
     const emitV = onlyDigits(state.venda.emitCnpj);
+
     if(emitR && emitV && emitR === emitV){
       rules.push(rule("OK","Emitente Remessa = Venda","Mesmo CNPJ."));
     }else{
-      rules.push(rule("ERRO","Emitente Remessa = Venda", `${formatCnpjOrDash(emitR)} x ${formatCnpjOrDash(emitV)}`));
+      rules.push(rule(
+        "ERRO",
+        "Emitente Remessa = Venda",
+        `${formatCnpjOrDash(emitR)} x ${formatCnpjOrDash(emitV)}`
+      ));
     }
 
     if(Math.abs((state.remessa.qTotal || 0) - (state.venda.qTotal || 0)) < 1e-9){
       rules.push(rule("OK","Quantidade","Totais iguais."));
     }else{
-      rules.push(rule("ERRO","Quantidade", `${state.remessa.qTotal || 0} x ${state.venda.qTotal || 0}`));
+      rules.push(rule(
+        "ERRO",
+        "Quantidade",
+        `${state.remessa.qTotal || 0} x ${state.venda.qTotal || 0}`
+      ));
     }
 
     if(Math.abs((state.remessa.vProdTotal || 0) - (state.venda.vProdTotal || 0)) <= CFG.TOLERANCIA_VALOR){
       rules.push(rule("OK","Valor","Totais iguais."));
     }else{
-      rules.push(rule("ERRO","Valor", `${fmtMoneyBR(state.remessa.vProdTotal)} x ${fmtMoneyBR(state.venda.vProdTotal)}`));
+      rules.push(rule(
+        "ERRO",
+        "Valor",
+        `${fmtMoneyBR(state.remessa.vProdTotal)} x ${fmtMoneyBR(state.venda.vProdTotal)}`
+      ));
     }
 
     const destVenda = onlyDigits(state.venda.destDoc);
+
     if(state.depositantesSet.size === 0){
       rules.push(rule("WARN","Depositante","Lista não carregada."));
     }else if(state.depositantesSet.has(destVenda)){
@@ -1292,11 +1376,12 @@ function validarTudo(){
   }
 
   document.getElementById("natOps").value =
-    `Remessa: ${normalizeText(state.remessa.natOp)||"—"} | Venda: ${state.venda ? (normalizeText(state.venda.natOp)||"—") : "—"}`;
+    `Remessa: ${normalizeText(state.remessa.natOp)||"—"} | Venda: ${
+      state.venda ? (normalizeText(state.venda.natOp)||"—") : "—"
+    }`;
 
   return rules;
 }
-
 /* =========================
    RENDER
 ========================= */
