@@ -705,19 +705,198 @@ REMESSA_PREFIXOS_OK: ["REM", "OUTRAS", "SIMPLES", "TERCEIROS"],
    MOTOR NCM INTELIGENTE
 ========================= */
 const NCM_ENGINE = {
+
+  // Prefixos normalmente aceitos
   allowedPrefixes: [
-    "9403", "4911", "4823", "4819", "3926", "3924",
-    "7326", "7616", "4415", "4420"
+    "9403", // displays / móveis / expositores
+    "4911", // impressos promocionais
+    "4823", // papel/cartão diversos
+    "4819", // embalagens papel/papelão
+    "3926", // artefatos plásticos
+    "3924", // utensílios plásticos
+    "7326", // artefatos metálicos
+    "7616", // alumínio
+    "4415", // pallets madeira
+    "4420"  // madeira decorativa
   ],
+
+  // Inteligência semântica
   keywordRules: [
-    { keywords:["DISPLAY","EXPOSITOR","BALCAO","MOSTRUARIO"], expected:["9403"] },
-    { keywords:["CARTAZ","FOLDER","LAMINA","IMPRESSO","PANFLETO"], expected:["4911","4823"] },
-    { keywords:["CAIXA","EMBALAGEM","PAPELAO"], expected:["4819","4823"] },
-    { keywords:["COPO","BRINDE","PVC","ACRILICO","PLASTICO"], expected:["3926","3924"] },
-    { keywords:["SUPORTE","ESTRUTURA","METAL","FERRO","ACO"], expected:["7326","7616"] },
-    { keywords:["PALLET","PALETE","MADEIRA"], expected:["4415","4420"] },
-    { keywords:["SACOLA","BOLSA","EMBALAGEM"], expected:["4819","4823","3926"] }
+
+    // =====================================================
+    // DISPLAY / MPDV / MERCHANDISING
+    // =====================================================
+    {
+      keywords: [
+        "DISPLAY",
+        "EXPOSITOR",
+        "MOSTRUARIO",
+        "BALCAO",
+        "SHOWROOM",
+        "MERCHANDISING",
+        "PROMOCIONAL",
+        "PROMOCAO",
+        "PREMIUM",
+        "MPDV"
+      ],
+      expected: ["9403"]
+    },
+
+    // =====================================================
+    // PALLETS / PALETES
+    // =====================================================
+    {
+      keywords: [
+        "PALLET",
+        "PALETE",
+        "MINI PALLET"
+      ],
+      expected: ["4415","4420","9403"]
+    },
+
+    // =====================================================
+    // MADEIRA
+    // =====================================================
+    {
+      keywords: [
+        "MADEIRA",
+        "MDF",
+        "COMPENSADO"
+      ],
+      expected: ["4415","4420"]
+    },
+
+    // =====================================================
+    // PAPEL / IMPRESSOS
+    // =====================================================
+    {
+      keywords: [
+        "CARTAZ",
+        "FOLDER",
+        "LAMINA",
+        "PANFLETO",
+        "IMPRESSO",
+        "ADESIVO",
+        "ETIQUETA",
+        "WOBBLER"
+      ],
+      expected: ["4911","4823"]
+    },
+
+    // =====================================================
+    // CAIXAS / EMBALAGENS
+    // =====================================================
+    {
+      keywords: [
+        "CAIXA",
+        "EMBALAGEM",
+        "PAPELAO",
+        "CARTONADO"
+      ],
+      expected: ["4819","4823"]
+    },
+
+    // =====================================================
+    // SACOLAS / BOLSAS
+    // =====================================================
+    {
+      keywords: [
+        "SACOLA",
+        "BOLSA",
+        "SHOPPING BAG"
+      ],
+      expected: ["4819","4823","3926"]
+    },
+
+    // =====================================================
+    // PLÁSTICOS
+    // =====================================================
+    {
+      keywords: [
+        "PVC",
+        "ACRILICO",
+        "PLASTICO",
+        "PET",
+        "PP",
+        "PEAD",
+        "PEBD",
+        "DISPLAY ACRILICO"
+      ],
+      expected: ["3926","3924"]
+    },
+
+    // =====================================================
+    // METAL / ESTRUTURA
+    // =====================================================
+    {
+      keywords: [
+        "METAL",
+        "FERRO",
+        "ACO",
+        "ALUMINIO",
+        "ESTRUTURA",
+        "SUPORTE",
+        "GANCHO",
+        "ARARA"
+      ],
+      expected: ["7326","7616","9403"]
+    }
+
+  ],
+
+  // =====================================================
+  // SCORE INTELIGENTE
+  // =====================================================
+  scoreRules: [
+
+    // 9403
+    {
+      ncm: "9403",
+      keywords: [
+        "DISPLAY",
+        "EXPOSITOR",
+        "MOSTRUARIO",
+        "PREMIUM",
+        "BALCAO",
+        "MPDV"
+      ],
+      score: 10
+    },
+
+    // MADEIRA
+    {
+      ncm: "4415",
+      keywords: [
+        "MADEIRA",
+        "PALLET"
+      ],
+      score: 6
+    },
+
+    // PLÁSTICO
+    {
+      ncm: "3926",
+      keywords: [
+        "PVC",
+        "ACRILICO",
+        "PLASTICO"
+      ],
+      score: 7
+    },
+
+    // PAPEL
+    {
+      ncm: "4819",
+      keywords: [
+        "CAIXA",
+        "EMBALAGEM",
+        "PAPELAO"
+      ],
+      score: 8
+    }
+
   ]
+
 };
 
 /* =========================
